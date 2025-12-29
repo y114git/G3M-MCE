@@ -55,11 +55,11 @@ function getAttr(element, attr) {
 
 function findChildren(element, tagName) {
   if (!element) return [];
-  
+
   if (element.documentElement) {
     element = element.documentElement;
   }
-  
+
   if (typeof element.getElementsByTagName === 'function') {
     return Array.from(element.getElementsByTagName(tagName));
   }
@@ -100,7 +100,7 @@ function generateFilesStructure(moddingXml, deltamodInfo) {
 
   let patches = [];
   const rootTag = getTagName(root);
-  
+
   if (rootTag === 'patch') {
     patches.push(root);
   } else {
@@ -196,9 +196,41 @@ export function convertDeltamodToDELTAHUB(deltamodInfo, moddingXml) {
   };
 }
 
+function findFileInZip(files, searchPath) {
+  if (files[searchPath]) {
+    return searchPath;
+  }
+
+  const normalizedPath = searchPath.replace(/\\/g, '/');
+  if (files[normalizedPath]) {
+    return normalizedPath;
+  }
+
+  const withDotSlash = `./${normalizedPath}`;
+  if (files[withDotSlash]) {
+    return withDotSlash;
+  }
+
+  const filename = searchPath.split('/').pop().split('\\').pop();
+  if (filename) {
+    const filenameLower = filename.toLowerCase();
+    for (const [filePath, fileEntry] of Object.entries(files)) {
+      if (!fileEntry.dir) {
+        const filePathLower = filePath.toLowerCase();
+        const pathFilename = filePath.split('/').pop().split('\\').pop().toLowerCase();
+        if (pathFilename === filenameLower || filePathLower.endsWith('/' + filenameLower) || filePathLower.endsWith('\\' + filenameLower)) {
+          return filePath;
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
 export function extractFileMapping(config, files) {
   const mapping = new Map();
-  
+
   for (const [chapterKey, chapterFiles] of Object.entries(config.files || {})) {
     if (chapterFiles.data_file_url) {
       const possiblePaths = [
@@ -206,23 +238,27 @@ export function extractFileMapping(config, files) {
         `./${chapterFiles.data_file_url}`,
         `chapter${chapterKey}_windows/${chapterFiles.data_file_url}`
       ];
-      
+
       for (const path of possiblePaths) {
-        if (files[path]) {
-          mapping.set(`${chapterKey}:data_file`, path);
+        const foundPath = findFileInZip(files, path);
+        if (foundPath) {
+          mapping.set(`${chapterKey}:data_file`, foundPath);
           break;
         }
       }
     }
-    
+
     if (chapterFiles.extra_files) {
       for (const extra of chapterFiles.extra_files) {
-        if (extra._sourceFile && files[extra._sourceFile]) {
-          mapping.set(`${chapterKey}:extra:${extra.key}`, extra._sourceFile);
+        if (extra._sourceFile) {
+          const foundPath = findFileInZip(files, extra._sourceFile);
+          if (foundPath) {
+            mapping.set(`${chapterKey}:extra:${extra.key}`, foundPath);
+          }
         }
       }
     }
   }
-  
+
   return mapping;
 }
