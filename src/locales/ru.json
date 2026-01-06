@@ -58,6 +58,7 @@
     "undertale": "UNDERTALE",
     "undertaleyellow": "UNDERTALE Yellow",
     "pizzatower": "Pizza Tower",
+    "sugaryspire": "Sugary Spire",
     "import_mod": "Импортировать мод"
   },
   "files": {
@@ -83,7 +84,8 @@
     "demo": "Демо",
     "undertale": "Undertale",
     "undertaleyellow": "UNDERTALE Yellow",
-    "pizzatower": "Pizza Tower"
+    "pizzatower": "Pizza Tower",
+    "sugaryspire": "Sugary Spire"
   },
   "tags": {
     "textedit_text": "Изм. Текста",

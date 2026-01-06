@@ -152,6 +152,7 @@ export default function ModEditor({ isCreating, isPublic, modData: initialModDat
           if (chapterKey === 'undertale') return 'undertale';
           if (chapterKey === 'undertaleyellow') return 'undertaleyellow';
           if (chapterKey === 'pizzatower') return 'pizzatower';
+          if (chapterKey === 'sugaryspire') return 'sugaryspire';
           if (chapterKey === '0') {
             const game = modData?.game || modData?.game || 'deltarune';
             if (game === 'pizzatower' || game === 'pizzaoven') {
@@ -256,6 +257,7 @@ export default function ModEditor({ isCreating, isPublic, modData: initialModDat
             <option value="undertale">{t('ui.undertale')}</option>
             <option value="undertaleyellow">{t('ui.undertaleyellow')}</option>
             <option value="pizzatower">{t('ui.pizzatower')}</option>
+            <option value="sugaryspire">{t('ui.sugaryspire')}</option>
           </select>
         </div>
 

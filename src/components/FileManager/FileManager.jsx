@@ -7,7 +7,8 @@ const CHAPTER_TABS = {
   deltarunedemo: ['demo'],
   undertale: ['undertale'],
   undertaleyellow: ['undertaleyellow'],
-  pizzatower: ['pizzatower']
+  pizzatower: ['pizzatower'],
+  sugaryspire: ['sugaryspire']
 };
 
 export default function FileManager({ game, modgame, files, isPublic, onChange, onFileChange }) {
@@ -31,6 +32,7 @@ export default function FileManager({ game, modgame, files, isPublic, onChange, 
     if (tab === 'undertale') return t('tabs.undertale');
     if (tab === 'undertaleyellow') return t('tabs.undertaleyellow');
     if (tab === 'pizzatower') return t('tabs.pizzatower');
+    if (tab === 'sugaryspire') return t('tabs.sugaryspire');
     return t('tabs.chapter_' + tab);
   };
 

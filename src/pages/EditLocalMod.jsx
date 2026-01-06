@@ -53,7 +53,7 @@ export default function EditLocalMod() {
 
         const parser = new DOMParser();
         let moddingXml = parser.parseFromString(moddingXmlText.trim(), 'text/xml');
-        
+
         if (moddingXml.querySelector('parsererror')) {
           let wrappedContent = moddingXmlText.trim();
           if (!wrappedContent.startsWith('<?xml')) {
@@ -77,7 +77,7 @@ export default function EditLocalMod() {
 
         const fileMapping = extractFileMapping(converted, files);
         const fileObjectsMap = new Map();
-        
+
         for (const [chapterKey, chapterFiles] of Object.entries(converted.files || {})) {
           if (chapterFiles.data_file_url) {
             const sourceKey = `${chapterKey}:data_file`;
@@ -89,12 +89,12 @@ export default function EditLocalMod() {
               fileObjectsMap.set(sourceKey, file);
             }
           }
-          
+
           if (chapterFiles.extra_files && Array.isArray(chapterFiles.extra_files)) {
             for (const extra of chapterFiles.extra_files) {
               const fileKey = `${chapterKey}:extra:${extra.key}`;
               const sourcePath = fileMapping.get(fileKey) || extra._sourceFile;
-              
+
               if (sourcePath && files[sourcePath]) {
                 const blob = files[sourcePath];
                 const fileName = sourcePath.split('/').pop() || extra.key;
@@ -113,6 +113,7 @@ export default function EditLocalMod() {
           if (chapterKey === 'undertale') return 'undertale';
           if (chapterKey === 'undertaleyellow') return 'undertaleyellow';
           if (chapterKey === 'pizzatower') return 'pizzatower';
+          if (chapterKey === 'sugaryspire') return 'sugaryspire';
           if (chapterKey === '0') {
             const game = result.modConfig?.game || 'deltarune';
             if (game === 'pizzatower' || game === 'pizzaoven') {

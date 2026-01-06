@@ -58,6 +58,7 @@
     "undertale": "UNDERTALE",
     "undertaleyellow": "UNDERTALE Yellow",
     "pizzatower": "Pizza Tower",
+    "sugaryspire": "Sugary Spire",
     "import_mod": "导入模组"
   },
   "files": {
@@ -83,7 +84,8 @@
     "demo": "演示",
     "undertale": "Undertale",
     "undertaleyellow": "UNDERTALE Yellow",
-    "pizzatower": "Pizza Tower"
+    "pizzatower": "Pizza Tower",
+    "sugaryspire": "Sugary Spire"
   },
   "tags": {
     "textedit_text": "文本编辑",
