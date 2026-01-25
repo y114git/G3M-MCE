@@ -1,16 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { generateSecretKey, hashSecretKey } from '../../utils/crypto';
-import { submitNewMod, submitModChange } from '../../utils/api';
 import { exportZip, downloadZip } from '../../utils/zipHandler';
-import { validateModName, validateModAuthor, validateVersion, validateExternalURL, validateDescriptionURL, validateIconURL } from '../../utils/validation';
+import { validateModName, validateModAuthor, validateVersion, validateExternalURL, validateIconURL } from '../../utils/validation';
 import FileManager from '../FileManager/FileManager';
 import IconPreview from '../IconPreview/IconPreview';
-import ScreenshotManager from '../ScreenshotManager/ScreenshotManager';
 import JSZip from 'jszip';
 import './ModEditor.css';
 
-export default function ModEditor({ isCreating, isPublic, modData: initialModData, secretKey: initialSecretKey, initialIconFile, initialFileObjects, onCancel }) {
+export default function ModEditor({ isCreating, modData: initialModData, initialIconFile, initialFileObjects, onCancel }) {
   const { t } = useTranslation();
 
   const [modData, setModData] = useState(initialModData || {
@@ -18,19 +15,14 @@ export default function ModEditor({ isCreating, isPublic, modData: initialModDat
     author: '',
     tagline: '',
     external_url: '',
-    icon_url: '',
-    description_url: '',
     version: '1.0.0',
     game_version: '1.04',
     game: 'deltarune',
     tags: [],
-    files: {},
-    screenshots_url: []
+    files: {}
   });
 
   const [iconFile, setIconFile] = useState(initialIconFile || null);
-  const [gameVersions, setGameVersions] = useState(['1.04']);
-  const [secretKey, setSecretKey] = useState(initialSecretKey || '');
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
   const [fileObjects, setFileObjects] = useState(initialFileObjects || new Map());
@@ -38,20 +30,6 @@ export default function ModEditor({ isCreating, isPublic, modData: initialModDat
   useEffect(() => {
     setIconFile(initialIconFile || null);
   }, [initialIconFile]);
-
-  useEffect(() => {
-    if (isPublic) {
-      import('../../utils/api').then(({ getGlobalSettings }) => {
-        getGlobalSettings()
-          .then(data => {
-            if (data.supported_game_versions) {
-              setGameVersions(data.supported_game_versions.sort().reverse());
-            }
-          })
-          .catch(() => { });
-      });
-    }
-  }, [isPublic]);
 
   const updateField = (field, value) => {
     setModData(prev => ({ ...prev, [field]: value }));
@@ -79,7 +57,7 @@ export default function ModEditor({ isCreating, isPublic, modData: initialModDat
     const nameValidation = validateModName(modData.name);
     if (!nameValidation.valid) newErrors.name = t(nameValidation.error);
 
-    const authorValidation = validateModAuthor(modData.author, isPublic);
+    const authorValidation = validateModAuthor(modData.author, false);
     if (!authorValidation.valid) newErrors.author = t(authorValidation.error);
 
     const versionValidation = validateVersion(modData.version);
@@ -88,16 +66,6 @@ export default function ModEditor({ isCreating, isPublic, modData: initialModDat
     if (modData.external_url) {
       const urlValidation = validateExternalURL(modData.external_url);
       if (!urlValidation.valid) newErrors.external_url = t(urlValidation.error);
-    }
-
-    if (isPublic && modData.description_url) {
-      const descValidation = validateDescriptionURL(modData.description_url);
-      if (!descValidation.valid) newErrors.description_url = t(descValidation.error);
-    }
-
-    if (modData.icon_url) {
-      const iconValidation = validateIconURL(modData.icon_url);
-      if (!iconValidation.valid) newErrors.icon_url = t(iconValidation.error);
     }
 
     const hasFiles = Object.keys(modData.files || {}).length > 0;
@@ -127,111 +95,96 @@ export default function ModEditor({ isCreating, isPublic, modData: initialModDat
     setSaving(true);
 
     try {
-      if (isPublic) {
-        let hashedKey = '';
-        if (isCreating) {
-          const newSecretKey = generateSecretKey();
-          setSecretKey(newSecretKey);
-          hashedKey = await hashSecretKey(newSecretKey);
-          await submitNewMod(modData, hashedKey);
-          alert(t('dialogs.mod_submitted') + '\n' + t('ui.secret_key_important') + '\n' + newSecretKey);
-        } else {
-          hashedKey = await hashSecretKey(secretKey);
-          await submitModChange(modData, hashedKey);
-          alert(t('dialogs.request_sent_title'));
-        }
-      } else {
-        const filesToExport = {};
+      const filesToExport = {};
 
-        if (iconFile) {
-          filesToExport['icon.png'] = iconFile;
-        }
+      if (iconFile) {
+        filesToExport['icon.png'] = iconFile;
+      }
 
-        const getChapterFolderName = (chapterKey) => {
-          if (chapterKey === 'demo') return 'demo';
-          if (chapterKey === 'undertale') return 'undertale';
-          if (chapterKey === 'undertaleyellow') return 'undertaleyellow';
-          if (chapterKey === 'pizzatower') return 'pizzatower';
-          if (chapterKey === 'sugaryspire') return 'sugaryspire';
-          if (chapterKey === '0') {
-            const game = modData?.game || modData?.game || 'deltarune';
-            if (game === 'pizzatower' || game === 'pizzaoven') {
-              return 'pizzatower';
-            }
-            return 'chapter_0';
+      const getChapterFolderName = (chapterKey) => {
+        if (chapterKey === 'demo') return 'demo';
+        if (chapterKey === 'undertale') return 'undertale';
+        if (chapterKey === 'undertaleyellow') return 'undertaleyellow';
+        if (chapterKey === 'pizzatower') return 'pizzatower';
+        if (chapterKey === 'sugaryspire') return 'sugaryspire';
+        if (chapterKey === '0') {
+          const game = modData?.game || modData?.game || 'deltarune';
+          if (game === 'pizzatower' || game === 'pizzaoven') {
+            return 'pizzatower';
           }
-          if (/^\d+$/.test(chapterKey)) return `chapter_${chapterKey}`;
-          return `chapter_${chapterKey}`;
-        };
+          return 'chapter_0';
+        }
+        if (/^\d+$/.test(chapterKey)) return `chapter_${chapterKey}`;
+        return `chapter_${chapterKey}`;
+      };
 
-        const modDataForExport = JSON.parse(JSON.stringify(modData));
+      const modDataForExport = JSON.parse(JSON.stringify(modData));
 
-        for (const [chapterKey, chapterFiles] of Object.entries(modData.files || {})) {
-          const chapterFolder = getChapterFolderName(chapterKey);
+      for (const [chapterKey, chapterFiles] of Object.entries(modData.files || {})) {
+        const chapterFolder = getChapterFolderName(chapterKey);
 
-          if (chapterFiles.data_file_url && !chapterFiles.data_file_url.startsWith('http')) {
-            const fileKey = `${chapterKey}:data_file`;
-            const file = fileObjects.get(fileKey);
-            if (file) {
-              const fileName = chapterFiles.data_file_url.split('/').pop() || chapterFiles.data_file_url;
-              filesToExport[`${chapterFolder}/${fileName}`] = file;
-            }
+        if (chapterFiles.data_file_url && !chapterFiles.data_file_url.startsWith('http')) {
+          const fileKey = `${chapterKey}:data_file`;
+          const file = fileObjects.get(fileKey);
+          if (file) {
+            const fileName = chapterFiles.data_file_url.split('/').pop() || chapterFiles.data_file_url;
+            filesToExport[`${chapterFolder}/${fileName}`] = file;
           }
+        }
 
-          if (chapterFiles.extra_files) {
-            const chapterFilesForExport = modDataForExport.files[chapterKey];
-            for (let i = 0; i < chapterFiles.extra_files.length; i++) {
-              const extra = chapterFiles.extra_files[i];
-              if (extra.url && !extra.url.startsWith('http')) {
-                const fileKey = `${chapterKey}:extra:${extra.key}`;
-                const file = fileObjects.get(fileKey);
-                if (file) {
-                  let archiveName = extra.url;
-                  if (!archiveName.endsWith('.zip')) {
-                    const archiveKey = extra.key || file.name.replace(/\./g, '_');
-                    archiveName = `extra_file_${archiveKey}.zip`;
-                  }
-
-                  if (chapterFilesForExport.extra_files && chapterFilesForExport.extra_files[i]) {
-                    chapterFilesForExport.extra_files[i].url = archiveName;
-                  }
-
-                  const isZipFile = file.name.toLowerCase().endsWith('.zip') ||
-                    file.type === 'application/zip' ||
-                    file.type === 'application/x-zip-compressed';
-
-                  let extraZipBlob;
-
-                  if (isZipFile && !extra._targetPath) {
-                    extraZipBlob = await file.arrayBuffer();
-                  } else {
-                    let targetPath = '';
-                    if (extra._targetPath) {
-                      targetPath = extra._targetPath;
-                    } else {
-                      const baseFileName = file.name.endsWith('.zip') ? file.name.slice(0, -4) : file.name;
-                      targetPath = baseFileName;
-                    }
-
-                    const extraZip = new JSZip();
-                    const fileData = await file.arrayBuffer();
-                    extraZip.file(targetPath, fileData);
-
-                    extraZipBlob = await extraZip.generateAsync({ type: 'blob' });
-                  }
-
-                  filesToExport[`${chapterFolder}/${archiveName}`] = extraZipBlob;
+        if (chapterFiles.extra_files) {
+          const chapterFilesForExport = modDataForExport.files[chapterKey];
+          for (let i = 0; i < chapterFiles.extra_files.length; i++) {
+            const extra = chapterFiles.extra_files[i];
+            if (extra.url && !extra.url.startsWith('http')) {
+              const fileKey = `${chapterKey}:extra:${extra.key}`;
+              const file = fileObjects.get(fileKey);
+              if (file) {
+                let archiveName = extra.url;
+                if (!archiveName.endsWith('.zip')) {
+                  const archiveKey = extra.key || file.name.replace(/\./g, '_');
+                  archiveName = `extra_file_${archiveKey}.zip`;
                 }
+
+                if (chapterFilesForExport.extra_files && chapterFilesForExport.extra_files[i]) {
+                  chapterFilesForExport.extra_files[i].url = archiveName;
+                }
+
+                const isZipFile = file.name.toLowerCase().endsWith('.zip') ||
+                  file.type === 'application/zip' ||
+                  file.type === 'application/x-zip-compressed';
+
+                let extraZipBlob;
+
+                if (isZipFile && !extra._targetPath) {
+                  extraZipBlob = await file.arrayBuffer();
+                } else {
+                  let targetPath = '';
+                  if (extra._targetPath) {
+                    targetPath = extra._targetPath;
+                  } else {
+                    const baseFileName = file.name.endsWith('.zip') ? file.name.slice(0, -4) : file.name;
+                    targetPath = baseFileName;
+                  }
+
+                  const extraZip = new JSZip();
+                  const fileData = await file.arrayBuffer();
+                  extraZip.file(targetPath, fileData);
+
+                  extraZipBlob = await extraZip.generateAsync({ type: 'blob' });
+                }
+
+                filesToExport[`${chapterFolder}/${archiveName}`] = extraZipBlob;
               }
             }
           }
         }
-
-        const zipBlob = await exportZip(modDataForExport, filesToExport);
-        downloadZip(zipBlob, `${modData.name || 'mod'}.zip`);
-        const messageKey = isCreating ? 'dialogs.local_mod_created_message' : 'dialogs.local_mod_updated_message';
-        alert(t(messageKey, { mod_name: modData.name }));
       }
+
+      const zipBlob = await exportZip(modDataForExport, filesToExport);
+      downloadZip(zipBlob, `${modData.name || 'mod'}.zip`);
+      const messageKey = isCreating ? 'dialogs.mod_created_message' : 'dialogs.mod_updated_message';
+      alert(t(messageKey, { mod_name: modData.name }));
 
       if (onCancel) onCancel();
     } catch (error) {
@@ -273,13 +226,12 @@ export default function ModEditor({ isCreating, isPublic, modData: initialModDat
         </div>
 
         <div className="form-group">
-          <label>{isPublic ? t('ui.mod_author') : t('ui.mod_author_optional')}</label>
+          <label>{t('ui.mod_author_optional')}</label>
           <input
             type="text"
             value={modData.author}
             onChange={(e) => updateField('author', e.target.value)}
-            placeholder={isPublic ? t('ui.enter_author_name') : t('ui.enter_author_name_optional')}
-            readOnly={!isCreating && isPublic}
+            placeholder={t('ui.enter_author_name_optional')}
           />
           {errors.author && <div className="error">{errors.author}</div>}
         </div>
@@ -307,42 +259,28 @@ export default function ModEditor({ isCreating, isPublic, modData: initialModDat
         </div>
 
         <div className="form-group">
-          <label>{isPublic ? t('files.icon_direct_link') : t('files.icon_label')}</label>
+          <label>{t('files.icon_label')}</label>
           <div className="form-row">
-            {isPublic ? (
-              <input
-                type="url"
-                value={modData.icon_url}
-                onChange={(e) => updateField('icon_url', e.target.value)}
-                placeholder={t('ui.leave_empty_for_default_icon')}
-              />
-            ) : (
-              <>
-                <input
-                  type="text"
-                  value={iconFile?.name || ''}
-                  readOnly
-                  placeholder={t('ui.select_icon_file')}
-                />
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setIconFile(e.target.files[0])}
-                  style={{ display: 'none' }}
-                  id="icon-file-input"
-                />
-                <button onClick={() => document.getElementById('icon-file-input').click()}>
-                  {t('ui.browse_button')}
-                </button>
-              </>
-            )}
+            <input
+              type="text"
+              value={iconFile?.name || ''}
+              readOnly
+              placeholder={t('ui.select_icon_file')}
+            />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setIconFile(e.target.files[0])}
+              style={{ display: 'none' }}
+              id="icon-file-input"
+            />
+            <button onClick={() => document.getElementById('icon-file-input').click()}>
+              {t('ui.browse_button')}
+            </button>
             <IconPreview
-              url={!iconFile ? modData.icon_url : ''}
               file={iconFile}
-              isPublic={isPublic}
             />
           </div>
-          {errors.icon_url && <div className="error">{errors.icon_url}</div>}
         </div>
 
         <div className="form-group">
@@ -372,56 +310,22 @@ export default function ModEditor({ isCreating, isPublic, modData: initialModDat
           {errors.version && <div className="error">{errors.version}</div>}
         </div>
 
-        {isPublic && (
-          <div className="form-group">
-            <label>{t('ui.full_description_link')}</label>
-            <input
-              type="url"
-              value={modData.description_url}
-              onChange={(e) => updateField('description_url', e.target.value)}
-              placeholder="https://example.com/description.md"
-            />
-            {errors.description_url && <div className="error">{errors.description_url}</div>}
-          </div>
-        )}
-
         <div className="form-group">
           <label>{t('ui.game_version_label')}</label>
-          {isPublic ? (
-            <select
-              value={modData.game_version}
-              onChange={(e) => updateField('game_version', e.target.value)}
-            >
-              {gameVersions.map(v => (
-                <option key={v} value={v}>{v}</option>
-              ))}
-            </select>
-          ) : (
-            <input
-              type="text"
-              value={modData.game_version}
-              onChange={(e) => updateField('game_version', e.target.value)}
-              placeholder="1.04"
-            />
-          )}
+          <input
+            type="text"
+            value={modData.game_version}
+            onChange={(e) => updateField('game_version', e.target.value)}
+            placeholder="1.04"
+          />
         </div>
-
-        {isPublic && (
-          <div className="form-group">
-            <ScreenshotManager
-              screenshots={modData.screenshots_url || []}
-              onChange={(screenshots) => updateField('screenshots_url', screenshots)}
-            />
-          </div>
-        )}
 
         <div className="form-group">
           <FileManager
             game={modData.game || modData.modgame}
             files={modData.files}
-            isPublic={isPublic}
             onChange={(files) => updateField('files', files)}
-            onFileChange={!isPublic ? handleFileChange : undefined}
+            onFileChange={handleFileChange}
           />
           {errors.files && <div className="error">{errors.files}</div>}
         </div>

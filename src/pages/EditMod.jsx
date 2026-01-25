@@ -5,7 +5,7 @@ import { importZip } from '../utils/zipHandler';
 import { convertDeltamodToDELTAHUB, extractFileMapping } from '../utils/modConverter';
 import ModEditor from '../components/ModEditor/ModEditor';
 
-export default function EditLocalMod() {
+export default function EditMod() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [modData, setModData] = useState(null);
@@ -205,7 +205,6 @@ export default function EditLocalMod() {
       <div className="container">
         <ModEditor
           isCreating={false}
-          isPublic={false}
           modData={modData}
           initialIconFile={iconFile}
           initialFileObjects={initialFileObjects}
