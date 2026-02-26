@@ -66,7 +66,7 @@
     "icon_direct_link": "圖示（直接連結）：",
     "data_file": "DATA - 檔案",
     "data_path_label": "{label_type} {file_type}：",
-    "archive_path_label": "{label_type}（.zip/.rar/.7z/資料夾）：",
+    "archive_path_label": "{label_type}（.zip/.rar/.7z/.tar.gz/資料夾）：",
     "download_link": "下載連結",
     "path_to": "路徑到",
     "archive_link": "存檔連結",
@@ -185,4 +185,3 @@
     "unknown": "未知"
   }
 }
-

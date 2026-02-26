@@ -152,7 +152,7 @@ export default function FileManager({ game, modgame, files, isPublic, onChange, 
                   />
                   <input
                     type="file"
-                    accept=".win,.ios,.xdelta,.vcdiff,.csx"
+                    accept=".win,.unx,.ios,.droid,.xdelta,.vcdiff,.csx"
                     onChange={(e) => {
                       if (e.target.files[0]) {
                         const file = e.target.files[0];
@@ -216,7 +216,7 @@ export default function FileManager({ game, modgame, files, isPublic, onChange, 
                   />
                   <input
                     type="file"
-                    accept=".zip,.rar,.7z"
+                    accept=".zip,.rar,.7z,.tar.gz"
                     onChange={(e) => {
                       if (e.target.files[0]) {
                         const file = e.target.files[0];

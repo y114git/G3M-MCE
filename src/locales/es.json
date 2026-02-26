@@ -66,7 +66,7 @@
     "icon_direct_link": "Icono (enlace directo):",
     "data_file": "DATA - Archivo",
     "data_path_label": "{label_type} {file_type}:",
-    "archive_path_label": "{label_type} (.zip/.rar/.7z/carpeta):",
+    "archive_path_label": "{label_type} (.zip/.rar/.7z/.tar.gz/carpeta):",
     "download_link": "Enlace de descarga",
     "path_to": "Ruta a",
     "archive_link": "Enlace de archivo",
@@ -185,4 +185,3 @@
     "unknown": "Desconocido"
   }
 }
-

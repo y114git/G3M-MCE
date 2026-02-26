@@ -66,7 +66,7 @@
     "icon_direct_link": "Icon (direct link):",
     "data_file": "DATA - File",
     "data_path_label": "{label_type} {file_type}:",
-    "archive_path_label": "{label_type} (.zip/.rar/.7z/folder):",
+    "archive_path_label": "{label_type} (.zip/.rar/.7z/.tar.gz/folder):",
     "download_link": "Download link",
     "path_to": "Path to",
     "archive_link": "Archive link",
@@ -185,4 +185,3 @@
     "unknown": "Unknown"
   }
 }
-
