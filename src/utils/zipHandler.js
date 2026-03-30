@@ -30,6 +30,17 @@ function findEntriesByPrefix(zipEntries, prefix) {
   );
 }
 
+function joinArchivePath(folderName, storedPath) {
+  const normalizedPath = normalizeStoredPath(storedPath, { allowDirectory: true });
+  if (!folderName || !normalizedPath) {
+    return normalizedPath;
+  }
+  if (normalizedPath === folderName || normalizedPath.startsWith(`${folderName}/`)) {
+    return normalizedPath;
+  }
+  return `${folderName}/${normalizedPath}`;
+}
+
 async function buildImportedAssetsFromConfig(config, zipEntries) {
   const assets = { icon: null, tabs: {} };
 
@@ -49,36 +60,50 @@ async function buildImportedAssetsFromConfig(config, zipEntries) {
 
   for (const [fileKey, fileInfo] of Object.entries(config.files || {})) {
     const tabFilesKey = mapConfigFileKeyToTabFilesKey(fileKey, config.game);
+    const archiveFolder = getArchiveFolderName(tabFilesKey, config.game);
     assets.tabs[tabFilesKey] = { dataFile: null, extraFiles: [] };
 
     if (fileInfo.data_file_path) {
-      // Look for file directly in root, not in chapter folders
-      const dataEntry = findEntryByName(zipEntries, [fileInfo.data_file_path]);
+      const normalizedDataPath = normalizeStoredPath(fileInfo.data_file_path);
+      const dataEntry = findEntryByName(zipEntries, [
+        normalizedDataPath,
+        joinArchivePath(archiveFolder, normalizedDataPath)
+      ]);
       if (dataEntry) {
         const dataBlob = await dataEntry.async('blob');
         assets.tabs[tabFilesKey].dataFile = {
           id: crypto.randomUUID?.() || `asset_${Math.random().toString(36).slice(2, 10)}`,
           kind: 'file',
-          storedPath: normalizeStoredPath(fileInfo.data_file_path),
-          label: normalizeStoredPath(fileInfo.data_file_path),
-          file: new File([dataBlob], normalizeStoredPath(fileInfo.data_file_path).split('/').pop() || 'data.win', {
+          storedPath: normalizedDataPath,
+          label: normalizedDataPath,
+          file: new File([dataBlob], normalizedDataPath.split('/').pop() || 'data.win', {
             type: dataBlob.type || 'application/octet-stream'
-          })
+          }),
+          archiveFolder:
+            normalizeStoredPath(dataEntry.name) === joinArchivePath(archiveFolder, normalizedDataPath)
+              ? archiveFolder
+              : undefined
         };
       }
     }
 
     for (const extraPath of parseExtraFilesRaw(fileInfo.extra_files)) {
+      const normalizedExtraPath = normalizeStoredPath(extraPath);
       if (extraPath.endsWith('/')) {
-        // For directories, look for files with that prefix in root
-        const folderEntries = findEntriesByPrefix(zipEntries, extraPath);
+        const folderEntries = [
+          ...findEntriesByPrefix(zipEntries, normalizedExtraPath),
+          ...findEntriesByPrefix(zipEntries, joinArchivePath(archiveFolder, normalizedExtraPath))
+        ];
         if (folderEntries.length === 0) continue;
 
         const files = [];
         for (const entry of folderEntries) {
           const blob = await entry.async('blob');
           const normalizedEntry = normalizeStoredPath(entry.name);
-          const relativePath = normalizedEntry.replace(extraPath, '');
+          const basePrefix = normalizedEntry.startsWith(joinArchivePath(archiveFolder, normalizedExtraPath))
+            ? joinArchivePath(archiveFolder, normalizedExtraPath)
+            : normalizedExtraPath;
+          const relativePath = normalizedEntry.replace(basePrefix, '');
           const cleanRelativePath = relativePath.replace(/^\/+/, '');
           files.push({
             relativePath: cleanRelativePath,
@@ -89,25 +114,32 @@ async function buildImportedAssetsFromConfig(config, zipEntries) {
         assets.tabs[tabFilesKey].extraFiles.push({
           id: crypto.randomUUID?.() || `asset_${Math.random().toString(36).slice(2, 10)}`,
           kind: 'directory',
-          storedPath: normalizeStoredPath(extraPath),
-          label: normalizeStoredPath(extraPath),
-          files
+          storedPath: normalizedExtraPath,
+          label: normalizedExtraPath,
+          files,
+          archiveFolder
         });
         continue;
       }
 
-      // For individual files, look directly in root
-      const extraEntry = findEntryByName(zipEntries, [extraPath]);
+      const extraEntry = findEntryByName(zipEntries, [
+        normalizedExtraPath,
+        joinArchivePath(archiveFolder, normalizedExtraPath)
+      ]);
       if (!extraEntry) continue;
       const extraBlob = await extraEntry.async('blob');
       assets.tabs[tabFilesKey].extraFiles.push({
         id: crypto.randomUUID?.() || `asset_${Math.random().toString(36).slice(2, 10)}`,
         kind: 'file',
-        storedPath: normalizeStoredPath(extraPath),
-        label: normalizeStoredPath(extraPath),
-        file: new File([extraBlob], normalizeStoredPath(extraPath).split('/').pop() || 'extra.bin', {
+        storedPath: normalizedExtraPath,
+        label: normalizedExtraPath,
+        file: new File([extraBlob], normalizedExtraPath.split('/').pop() || 'extra.bin', {
           type: extraBlob.type || 'application/octet-stream'
-        })
+        }),
+        archiveFolder:
+          normalizeStoredPath(extraEntry.name) === joinArchivePath(archiveFolder, normalizedExtraPath)
+            ? archiveFolder
+            : undefined
       });
     }
   }
@@ -164,7 +196,8 @@ export async function importZipArchive(file) {
 
 function addDirectoryAsset(zip, basePath, asset) {
   for (const entry of asset.files || []) {
-    zip.file(`${basePath}${entry.relativePath}`, entry.file);
+    const archiveBase = joinArchivePath(asset.archiveFolder, basePath);
+    zip.file(`${archiveBase}${entry.relativePath}`, entry.file);
   }
 }
 
@@ -184,8 +217,8 @@ export async function exportModArchive({ config, assets }) {
 
     if (tabAssets?.dataFile?.file) {
       const storedPath = normalizeStoredPath(tabAssets.dataFile.storedPath || tabAssets.dataFile.file.name);
-      // Store file directly in root with correct path, no chapter folders
-      zip.file(storedPath, tabAssets.dataFile.file);
+      const archivePath = joinArchivePath(tabAssets.dataFile.archiveFolder, storedPath);
+      zip.file(archivePath, tabAssets.dataFile.file);
       fileEntry.data_file_path = storedPath;
     }
 
@@ -196,7 +229,7 @@ export async function exportModArchive({ config, assets }) {
         fileEntry.extra_files.push(storedPath);
 
         if (extraAsset.kind === 'directory') addDirectoryAsset(zip, storedPath, extraAsset);
-        else if (extraAsset.file) zip.file(storedPath, extraAsset.file);
+        else if (extraAsset.file) zip.file(joinArchivePath(extraAsset.archiveFolder, storedPath), extraAsset.file);
       }
     }
 

@@ -197,19 +197,21 @@ export async function convertDeltamodArchive(zipEntries, gamebananaMetadata = {}
         kind: 'file',
         storedPath,
         label: storedPath,
-        file
+        file,
+        archiveFolder: getArchiveFolderName(tabFilesKey, targetGame)
       };
     } else if (patchType === 'override') {
       const storedPath = buildStoredPath(relativePath, filename);
       if (!files[contentKey].extra_files) files[contentKey].extra_files = [];
       files[contentKey].extra_files.push(storedPath);
-      
+
       assets.tabs[tabFilesKey].extraFiles.push({
         id: crypto.randomUUID?.() || `asset_${Math.random().toString(36).slice(2, 10)}`,
         kind: 'file',
         storedPath,
         label: storedPath,
-        file
+        file,
+        archiveFolder: getArchiveFolderName(tabFilesKey, targetGame)
       });
     } else {
       console.warn('Unknown patch type:', patchType);
