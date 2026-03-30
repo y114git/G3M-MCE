@@ -1,104 +1,118 @@
-.home {
-  padding: 40px 20px;
+.g3m-home {
+  width: min(1180px, calc(100vw - 48px));
+  margin: 0 auto;
+  padding: 36px 0 48px;
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  min-height: calc(100vh - 80px);
 }
 
-.home-header {
+.g3m-home__hero {
+  position: relative;
+  overflow: hidden;
+  border: 2px solid var(--g3m-border);
+  border-radius: 7px;
+  background:
+    linear-gradient(160deg, rgba(34, 34, 34, 0.95), rgba(40, 40, 40, 0.9)),
+    radial-gradient(circle at top right, rgba(109, 233, 133, 0.16), transparent 34%);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.32);
+  min-height: calc(100svh - 120px);
+  padding: clamp(28px, 5vw, 56px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 40px;
-}
-
-.home-icon {
-  width: 96px;
-  height: 96px;
-  object-fit: contain;
-}
-
-.home h1 {
-  font-size: 32px;
-  text-transform: uppercase;
-  margin: 0;
-}
-
-.home-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  align-items: center;
-  flex: 1;
   justify-content: center;
+  gap: 48px;
 }
 
-.action-button {
-  min-width: 250px;
-  padding: 16px 32px;
-  font-size: 18px;
+.g3m-home__hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(3, 157, 91, 0.14), transparent 44%),
+    url('../assets/g3m-background.png') center/cover no-repeat;
+  opacity: 0.22;
+  mix-blend-mode: screen;
+  pointer-events: none;
 }
 
-.action-button.primary {
-  font-size: 20px;
-  padding: 20px 40px;
+.g3m-home__logo {
+  width: 100%;
+  max-width: 575px;
+  height: auto;
+  max-height: 138px;
 }
 
-.action-button.back {
-  align-self: flex-start;
-  min-width: auto;
-  padding: 8px 16px;
-  font-size: 14px;
+.g3m-home__copy,
+.g3m-home__actions,
+.g3m-home__links {
+  position: relative;
+  z-index: 1;
 }
 
-.type-selection {
+.g3m-home__copy {
+  width: min(900px, 100%);
+  display: grid;
+  gap: 24px;
+}
+
+.g3m-home__copy h1 {
+  font-size: clamp(2.07rem, 4.6vw, 2.76rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.g3m-home__copy p {
+  width: min(598px, 100%);
+  margin: 0 auto;
+  color: var(--g3m-secondary);
+  font-size: 1.15rem;
+}
+
+.g3m-home__actions {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
-  align-items: center;
-}
-
-.type-selection h2 {
-  font-size: 24px;
-  margin: 0;
-}
-
-.type-buttons {
-  display: flex;
-  gap: 20px;
+  gap: 13.8px;
   flex-wrap: wrap;
   justify-content: center;
-  margin-bottom: 20px;
 }
 
-.type-buttons .action-button {
-  min-width: 200px;
-}
-
-.action-button.back {
-  align-self: center;
-  margin: 0 auto;
-}
-
-.home-footer {
-  margin-top: auto;
-  padding-top: 40px;
+.g3m-home__links {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
+  gap: 25.3px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-.guide-link {
-  color: #888888;
+.g3m-home__links a {
+  color: var(--g3m-text);
+  text-decoration: none;
+  font-size: 1.15rem;
+  border-bottom: 2px solid var(--g3m-border);
+}
+
+.g3m-home__links a:hover {
+  opacity: 0.84;
+}
+
+.g3m-home__copy a {
+  color: var(--g3m-secondary);
   text-decoration: underline;
-  font-size: 14px;
-  transition: color 0.2s;
 }
 
-.guide-link:hover {
-  color: #ffffff;
+.g3m-home__copy a:hover {
+  opacity: 0.84;
 }
 
+@media (max-width: 760px) {
+  .g3m-home {
+    width: min(100vw - 24px, 1180px);
+    padding-top: 76px;
+  }
+
+  .g3m-home__logo {
+    max-width: 100%;
+  }
+
+  .g3m-home__hero {
+    min-height: auto;
+  }
+}

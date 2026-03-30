@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './i18n';
 import './styles/theme.css';
-import faviconUrl from './assets/favicon.png';
+import faviconUrl from './assets/icon.ico';
 
 const setFavicon = (url) => {
   let link = document.querySelector("link[rel~='icon']");
@@ -16,6 +16,7 @@ const setFavicon = (url) => {
 };
 
 setFavicon(faviconUrl);
+document.body.dataset.lang = localStorage.getItem('language') || 'en';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

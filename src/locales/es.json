@@ -5,17 +5,16 @@
     "back": "Volver",
     "select_mod_type": "Selecciona el tipo de mod:",
     "select_mod_type_edit": "Selecciona el tipo de mod a editar:",
-    "view_guide": "Ver Guía del Modder",
-    "download_deltahub": "Descargar DELTAHUB (Recomendado)",
+    "download_g3m": "Descargar G3M (Recomendado)",
     "mod_type_label": "Juego:",
     "mod_name_label": "Nombre del mod:",
     "enter_mod_name": "Ingresa el nombre del mod",
     "mod_author": "Autor del mod:",
     "mod_author_optional": "Autor del mod (opcional):",
     "enter_author_name": "Ingresa el nombre del autor",
-    "enter_author_name_optional": "Ingresa el nombre del autor (opcional)",
-    "short_description": "Descripción corta/Eslogan (máx. 200 caracteres):",
-    "short_description_placeholder": "Descripción corta del mod",
+    "enter_author_name_optional": "Ingresa el nombre del autor (o deja vacío)",
+    "description": "Descripción:",
+    "description_placeholder": "Descripción del mod",
     "external_url_optional": "URL externa (Opcional)",
     "overall_mod_version": "Versión general del mod:",
     "full_description_link": "Descripción completa (enlace a .md/.txt):",
@@ -47,6 +46,7 @@
     "save_changes": "Guardar cambios",
     "cancel_button": "Cancelar",
     "delete": "Eliminar",
+    "clear": "Limpiar",
     "hide_mod": "Ocultar mod",
     "delete_local_mod": "Eliminar mod local",
     "delete_mod": "Eliminar mod",
@@ -59,7 +59,26 @@
     "undertaleyellow": "UNDERTALE Yellow",
     "pizzatower": "Pizza Tower",
     "sugaryspire": "Sugary Spire",
-    "import_mod": "Importar Mod"
+    "import_mod": "Importar Mod",
+    "homepage": "Página de inicio",
+    "mod_editor_fields_hint": "Completa solo los campos que ayuden a explicar el mod.",
+    "mod_editor_files_hint": "Cada pestaña puede contener un archivo DATA y cualquier número de archivos o carpetas adicionales.<br>Los archivos se descomprimen en la carpeta del juego, lo cual es útil para mantener muchos archivos y rutas en un solo grupo."
+  },
+  "home": {
+    "description": "Herramienta web para crear, editar y empaquetar mods en formato G3M. Soporta <a href=\"https://gamebanana.com/tools/20575\" target=\"_blank\" rel=\"noreferrer\">Deltamod</a>."
+  },
+  "edit": {
+    "importLead": "Abre un archivo existente y continúa en el mismo flujo del editor.",
+    "archiveField": "Seleccionar archivo de mod",
+    "extraFolder": "Carpeta adicional",
+    "folderCount": "{{count}} archivos agrupados en esta carpeta."
+  },
+  "editor": {
+    "metadataTitle": "Metadatos",
+    "iconHint": "Pega una URL de imagen o selecciona un archivo de icono local.",
+    "addFolder": "Agregar carpeta",
+    "noDataFile": "No se ha seleccionado ningún archivo DATA para esta pestaña aún.",
+    "noExtraFiles": "No se han seleccionado archivos adicionales para esta pestaña."
   },
   "files": {
     "icon_label": "Icono",
@@ -176,6 +195,9 @@
     "loading": "Cargando...",
     "loading_error": "Error\\nde carga",
     "deltarune_logo": "DELTARUNE\\nLogo"
+  },
+  "aria": {
+    "language": "Idioma"
   },
   "defaults": {
     "local_author": "Autor local",

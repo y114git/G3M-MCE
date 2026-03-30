@@ -5,8 +5,7 @@
     "back": "Назад",
     "select_mod_type": "Выберите тип мода:",
     "select_mod_type_edit": "Выберите тип мода для редактирования:",
-    "view_guide": "Просмотреть руководство моддера",
-    "download_deltahub": "Скачать DELTAHUB (Рекомендовано)",
+    "download_g3m": "Скачать G3M (Рекомендовано)",
     "mod_type_label": "Игра:",
     "mod_name_label": "Название мода:",
     "enter_mod_name": "Введите название мода",
@@ -14,8 +13,8 @@
     "mod_author_optional": "Автор мода (необязательно):",
     "enter_author_name": "Введите имя автора",
     "enter_author_name_optional": "Введите имя автора (или оставьте пустым)",
-    "short_description": "Короткое описание/Слоган (макс. 200 символов):",
-    "short_description_placeholder": "Краткое описание мода",
+    "description": "Описание:",
+    "description_placeholder": "Описание мода",
     "external_url_optional": "Внешняя ссылка (Необязательно)",
     "overall_mod_version": "Общая версия мода:",
     "full_description_link": "Полное описание (ссылка на .md/.txt):",
@@ -36,7 +35,7 @@
     "manage_screenshots": "Управление скриншотами",
     "screenshots_title": "Скриншоты",
     "file_generic": "файл",
-    "folder": "Folder",
+    "folder": "Папка",
     "select_file_or_folder": "Выбрать файл или папку?",
     "select": "Выберите",
     "downloads_count": "Количество скачиваний вашего мода: {count}",
@@ -45,9 +44,10 @@
     "verification_details": "Нажмите, чтобы узнать подробности",
     "finish_creation": "Завершить создание",
     "save_changes": "Сохранить изменения",
-    "cancel_button": "Отменить",
+    "cancel_button": "Отмена",
     "delete": "Удалить",
-    "hide_mod": "Спрятать мод",
+    "clear": "Очистить",
+    "hide_mod": "Скрыть мод",
     "delete_local_mod": "Удалить локальный мод",
     "delete_mod": "Удалить мод",
     "secret_key_important": "ВАЖНО: Сохраните этот ключ! Он понадобится для редактирования мода.",
@@ -59,7 +59,26 @@
     "undertaleyellow": "UNDERTALE Yellow",
     "pizzatower": "Pizza Tower",
     "sugaryspire": "Sugary Spire",
-    "import_mod": "Импортировать мод"
+    "import_mod": "Импортировать мод",
+    "homepage": "Домашняя страница",
+    "mod_editor_fields_hint": "Заполняйте только те поля, которые помогают объяснить мод.",
+    "mod_editor_files_hint": "Каждая вкладка может содержать один DATA файл и любое количество дополнительных файлов или папок.<br>Архивы распаковываются в папку игры, что удобно для хранения множества файлов и путей в одной группе."
+  },
+  "home": {
+    "description": "Веб-инструмент для создания, редактирования и упаковки модов в G3M формате. Поддерживает <a href=\"https://gamebanana.com/tools/20575\" target=\"_blank\" rel=\"noreferrer\">Deltamod</a>."
+  },
+  "edit": {
+    "importLead": "Откройте существующий архив и продолжите в том же потоке редактора.",
+    "archiveField": "Выберите архив мода",
+    "extraFolder": "Дополнительная папка",
+    "folderCount": "{{count}} файлов в этой папке."
+  },
+  "editor": {
+    "metadataTitle": "Метаданные",
+    "iconHint": "Вставьте URL изображения или выберите локальный файл иконки.",
+    "addFolder": "Добавить папку",
+    "noDataFile": "DATA файл еще не выбран для этой вкладки.",
+    "noExtraFiles": "Дополнительные файлы еще не выбраны для этой вкладки."
   },
   "files": {
     "icon_label": "Иконка",
@@ -176,6 +195,9 @@
     "loading": "Загрузка...",
     "loading_error": "Ошибка\\nзагрузки",
     "deltarune_logo": "DELTARUNE\\nЛого"
+  },
+  "aria": {
+    "language": "Язык"
   },
   "defaults": {
     "local_author": "Локальный автор",

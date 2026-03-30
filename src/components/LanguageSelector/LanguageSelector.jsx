@@ -10,11 +10,12 @@ const languages = [
 ];
 
 export default function LanguageSelector() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
     localStorage.setItem('language', lng);
+    document.body.setAttribute('data-lang', lng);
   };
 
   return (
@@ -23,6 +24,7 @@ export default function LanguageSelector() {
         value={i18n.language}
         onChange={(e) => changeLanguage(e.target.value)}
         className="language-select"
+        aria-label={t('aria.language')}
       >
         {languages.map((lang) => (
           <option key={lang.code} value={lang.code}>

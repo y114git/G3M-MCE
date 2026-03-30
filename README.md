@@ -1,6 +1,6 @@
-# DELTAHUB Mod Creator/Editor
+# G3M Mod Creator/Editor
 
-Web-based mod creator and editor for DELTAHUB format mods. Create and edit mods without installing DELTAHUB.
+Web-based mod creator and editor for G3M format mods. Create and edit mods without installing G3M.
 
 ## Features
 
@@ -10,7 +10,8 @@ Web-based mod creator and editor for DELTAHUB format mods. Create and edit mods 
 - Edit local mods (import ZIP)
 - Support for DELTARUNE, DELTARUNE DEMO, UNDERTALE, and UNDERTALE Yellow
 - Multi-language support (EN, RU, ZH_CN, ZH_TW, ES)
-- Import from DELTAHUB and Deltamod formats
-- Export to DELTAHUB format
+- Import from G3M and Deltamod formats
+- Export to G3M format
+
 
 

@@ -5,17 +5,16 @@
     "back": "返回",
     "select_mod_type": "選擇模組類型：",
     "select_mod_type_edit": "選擇要編輯的模組類型：",
-    "view_guide": "查看模組製作指南",
-    "download_deltahub": "下載 DELTAHUB（推薦）",
+    "download_g3m": "下載 G3M（推薦）",
     "mod_type_label": "遊戲：",
     "mod_name_label": "模組名稱：",
     "enter_mod_name": "輸入模組名稱",
     "mod_author": "模組作者：",
     "mod_author_optional": "模組作者（可選）：",
     "enter_author_name": "輸入作者名稱",
-    "enter_author_name_optional": "輸入作者名稱（可選）",
-    "short_description": "簡短描述/標語（最多200個字符）：",
-    "short_description_placeholder": "簡短模組描述",
+    "enter_author_name_optional": "輸入作者名稱（或留空）",
+    "description": "描述：",
+    "description_placeholder": "模組描述",
     "external_url_optional": "外部URL（可選）",
     "overall_mod_version": "模組總體版本：",
     "full_description_link": "完整描述（連結到.md/.txt檔案）：",
@@ -46,7 +45,8 @@
     "finish_creation": "完成創建",
     "save_changes": "儲存變更",
     "cancel_button": "取消",
-    "delete": "刪除",
+    "delete": "移除",
+    "clear": "清除",
     "hide_mod": "隱藏模組",
     "delete_local_mod": "刪除本地模組",
     "delete_mod": "刪除模組",
@@ -59,7 +59,26 @@
     "undertaleyellow": "UNDERTALE Yellow",
     "pizzatower": "Pizza Tower",
     "sugaryspire": "Sugary Spire",
-    "import_mod": "匯入模組"
+    "import_mod": "匯入模組",
+    "homepage": "主頁",
+    "mod_editor_fields_hint": "只填寫有助於解釋模組的欄位。",
+    "mod_editor_files_hint": "每個標籤頁可以容納一個DATA檔案和任意數量的額外檔案或資料夾。<br>存檔會解壓縮到遊戲資料夾中，這很方便將許多檔案和路徑保存在一個群組中。"
+  },
+  "home": {
+    "description": "用於創建、編輯和打包G3M格式模組的網頁工具。支援<a href=\"https://gamebanana.com/tools/20575\" target=\"_blank\" rel=\"noreferrer\">Deltamod</a>。"
+  },
+  "edit": {
+    "importLead": "開啟現有存檔並在相同的編輯器流程中繼續。",
+    "archiveField": "選擇模組存檔",
+    "extraFolder": "額外資料夾",
+    "folderCount": "此資料夾下包含{{count}}個檔案。"
+  },
+  "editor": {
+    "metadataTitle": "元數據",
+    "iconHint": "貼上圖像URL或選擇本機圖示檔案。",
+    "addFolder": "新增資料夾",
+    "noDataFile": "此標籤頁尚未選擇DATA檔案。",
+    "noExtraFiles": "此標籤頁尚未選擇額外檔案。"
   },
   "files": {
     "icon_label": "圖示",
@@ -176,6 +195,9 @@
     "loading": "載入中...",
     "loading_error": "載入\\n錯誤",
     "deltarune_logo": "DELTARUNE\\n標誌"
+  },
+  "aria": {
+    "language": "語言"
   },
   "defaults": {
     "local_author": "本地作者",

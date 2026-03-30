@@ -5,17 +5,16 @@
     "back": "Back",
     "select_mod_type": "Select mod type:",
     "select_mod_type_edit": "Select mod type to edit:",
-    "view_guide": "View Modder's Guide",
-    "download_deltahub": "Download DELTAHUB (Recommended)",
+    "download_g3m": "Download G3M (Recommended)",
     "mod_type_label": "Game:",
     "mod_name_label": "Mod name:",
     "enter_mod_name": "Enter mod name",
     "mod_author": "Mod author:",
     "mod_author_optional": "Mod author (optional):",
-    "enter_author_name": "Enter author's name",
-    "enter_author_name_optional": "Enter author's name (optional)",
-    "short_description": "Short description/Tagline (max 200 chars):",
-    "short_description_placeholder": "Short mod description",
+    "enter_author_name": "Enter author name",
+    "enter_author_name_optional": "Enter author name (or leave empty)",
+    "description": "Description:",
+    "description_placeholder": "Mod description",
     "external_url_optional": "External URL (Optional)",
     "overall_mod_version": "Overall mod version:",
     "full_description_link": "Full description (link to .md/.txt):",
@@ -46,7 +45,8 @@
     "finish_creation": "Finish Creation",
     "save_changes": "Save changes",
     "cancel_button": "Cancel",
-    "delete": "Delete",
+    "delete": "Remove",
+    "clear": "Clear",
     "hide_mod": "Hide mod",
     "delete_local_mod": "Delete local mod",
     "delete_mod": "Delete mod",
@@ -59,7 +59,26 @@
     "undertaleyellow": "UNDERTALE Yellow",
     "pizzatower": "Pizza Tower",
     "sugaryspire": "Sugary Spire",
-    "import_mod": "Import Mod"
+    "import_mod": "Import Mod",
+    "homepage": "Homepage",
+    "mod_editor_fields_hint": "Only fill in the fields that help explain the mod.",
+    "mod_editor_files_hint": "Each tab can contain one DATA file and any number of extra files or folders.<br>Archives are unpacked into the game folder, which is handy for keeping many files and paths in one group."
+  },
+  "home": {
+    "description": "Web tool for creating, editing and packaging mods in G3M format. Supports <a href=\"https://gamebanana.com/tools/20575\" target=\"_blank\" rel=\"noreferrer\">Deltamod</a>."
+  },
+  "edit": {
+    "importLead": "Open an existing archive and continue in the same editor flow.",
+    "archiveField": "Select mod archive",
+    "extraFolder": "Extra folder",
+    "folderCount": "{{count}} files bundled under this folder."
+  },
+  "editor": {
+    "metadataTitle": "Metadata",
+    "iconHint": "Paste an image URL or select a local icon file.",
+    "addFolder": "Add folder",
+    "noDataFile": "No DATA file selected for this tab yet.",
+    "noExtraFiles": "No extra files selected for this tab."
   },
   "files": {
     "icon_label": "Icon",
@@ -97,7 +116,7 @@
     "other_text": "Other"
   },
   "buttons": {
-    "delete": "Delete",
+    "delete": "Remove",
     "close": "Close",
     "ok": "OK",
     "public": "Public",
@@ -176,6 +195,9 @@
     "loading": "Loading...",
     "loading_error": "Load\\nError",
     "deltarune_logo": "DELTARUNE\\nLogo"
+  },
+  "aria": {
+    "language": "Language"
   },
   "defaults": {
     "local_author": "Local author",
