@@ -114,6 +114,7 @@ input::file-selector-button {
   min-height: auto !important;
   max-height: none !important;
   height: auto !important;
+  transition: background-color var(--g3m-transition), transform var(--g3m-transition) !important;
 }
 
 .g3m-files-toolbar .g3m-button,
@@ -123,31 +124,48 @@ input::file-selector-button {
 }
 
 .g3m-button:hover {
-  background: rgba(97, 107, 120, 0.58);
+  background: rgba(97, 107, 120, 0.58) !important;
+  transform: scale(1.02);
+  transition: background-color var(--g3m-transition), transform var(--g3m-transition);
 }
 
 .g3m-button--primary {
   background: rgba(3, 157, 91, 0.22);
   border-color: var(--g3m-border);
+  transition: background-color var(--g3m-transition), transform var(--g3m-transition) !important;
 }
 
 .g3m-button--primary:hover {
-  background: rgba(3, 157, 91, 0.32);
+  background: rgba(3, 157, 91, 0.32) !important;
+  transform: scale(1.02);
+  transition: background-color var(--g3m-transition), transform var(--g3m-transition);
 }
 
 .g3m-button--ghost {
   background: rgba(40, 40, 40, 0.72);
+  transition: background-color var(--g3m-transition), transform var(--g3m-transition) !important;
+}
+
+.g3m-button--ghost:hover {
+  background: rgba(97, 107, 120, 0.58) !important;
+  transform: scale(1.02);
+  transition: background-color var(--g3m-transition), transform var(--g3m-transition);
 }
 
 .g3m-button--danger {
   background: rgba(158, 41, 41, 0.22);
   border-color: var(--g3m-border);
+  transition: background-color var(--g3m-transition), transform var(--g3m-transition) !important;
 }
 
 .g3m-button--danger:hover {
-  background: rgba(158, 41, 41, 0.36);
+  background: rgba(158, 41, 41, 0.36) !important;
+  transform: scale(1.02);
+  transition: background-color var(--g3m-transition), transform var(--g3m-transition);
 }
 
 .g3m-tabbar__tab:hover {
   background: rgba(97, 107, 120, 0.58);
+  transform: scale(1.02);
+  transition: background-color var(--g3m-transition), transform var(--g3m-transition);
 }
