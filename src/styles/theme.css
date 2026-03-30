@@ -147,3 +147,7 @@ input::file-selector-button {
 .g3m-button--danger:hover {
   background: rgba(158, 41, 41, 0.36);
 }
+
+.g3m-tabbar__tab:hover {
+  background: rgba(97, 107, 120, 0.58);
+}
