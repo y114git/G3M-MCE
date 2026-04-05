@@ -93,6 +93,15 @@ function buildStoredPath(relativePath, filename) {
   return relativePath ? `${relativePath}${filename}` : filename;
 }
 
+function buildChapterStoredPath(tabFilesKey, targetGame, relativePath, filename) {
+  const basePath = buildStoredPath(relativePath, filename);
+  if (!basePath) return '';
+  if (targetGame === 'deltarune' && /^\d+$/.test(String(tabFilesKey)) && String(tabFilesKey) !== '0') {
+    return `${getArchiveFolderName(tabFilesKey, targetGame)}/${basePath}`;
+  }
+  return basePath;
+}
+
 function generateModId(metadata, gamebananaMetadata = {}) {
   if (gamebananaMetadata.mod_id) {
     return `gb_${gamebananaMetadata.mod_id}`;
@@ -190,7 +199,7 @@ export async function convertDeltamodArchive(zipEntries, gamebananaMetadata = {}
     const file = new File([blob], cleanFilename, { type: blob.type || 'application/octet-stream' });
 
     if (patchType === 'xdelta') {
-      const storedPath = cleanFilename;
+      const storedPath = buildChapterStoredPath(tabFilesKey, targetGame, '', cleanFilename);
       files[contentKey].data_file_path = storedPath;
       assets.tabs[tabFilesKey].dataFile = {
         id: crypto.randomUUID?.() || `asset_${Math.random().toString(36).slice(2, 10)}`,
@@ -201,7 +210,7 @@ export async function convertDeltamodArchive(zipEntries, gamebananaMetadata = {}
         archiveFolder: getArchiveFolderName(tabFilesKey, targetGame)
       };
     } else if (patchType === 'override') {
-      const storedPath = buildStoredPath(relativePath, filename);
+      const storedPath = buildChapterStoredPath(tabFilesKey, targetGame, relativePath, filename);
       if (!files[contentKey].extra_files) files[contentKey].extra_files = [];
       files[contentKey].extra_files.push(storedPath);
 
