@@ -1,282 +1,197 @@
-import { normalizeModConfigData, buildModConfigData } from '../data/modConfig';
-import { getGameDefinition, mapConfigFileKeyToTabFilesKey, getArchiveFolderName } from '../data/gameDefinitions';
 import { parse as parseToml } from 'smol-toml';
+import {
+  DOCUMENT_EXTENSIONS,
+  MOD_ALLOWED_TAGS,
+  parseConfigJson,
+} from '../data/modConfig';
 
-// Game mapping from G3M's Deltamod importer.
-const DELTAMOD_GAME_MAP = {
-  "toby.deltarune": "deltarune",
-  "toby.deltarune.demo": "deltarunedemo", 
-  "toby.deltarune.demolts": "deltarunedemo",
-  "toby.undertale": "undertale",
-  "fans.utyellow": "undertaleyellow",
-  "other.pizzatower": "pizzatower",
-  "other.frickbears3": "frickbears3",
+const gameMap = {
+  'toby.deltarune': 'deltarune',
+  'toby.deltarune.demo': 'deltarunedemo',
+  'toby.deltarune.demolts': 'deltarunedemo',
+  'toby.undertale': 'undertale',
+  'fans.utyellow': 'undertaleyellow',
+  'other.pizzatower': 'pizzatower',
+  'other.frickbears3': 'frickbears3',
 };
-
-function readAttribute(element, attribute) {
-  if (!element) return '';
-  if (typeof element.getAttribute === 'function') {
-    return element.getAttribute(attribute) || '';
-  }
-  return '';
+const allowed = {
+  xdelta: /\.(xdelta|vcdiff|csx|win)$/i,
+  g3mpatch: /\.g3mpatch$/i,
+  csx: /\.csx$/i,
+  copy: /^(?!.*\.(xdelta|vcdiff|csx)$).+/i,
+  override: /^(?!.*\.(xdelta|vcdiff|csx)$).+/i,
+};
+const decode = (bytes) =>
+  new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+function relativePath(value) {
+  const path = String(value || '')
+    .replace(/\\/g, '/')
+    .replace(/^(\.\/)+/, '');
+  if (
+    !path ||
+    /^(?:\/|[A-Za-z]:)/.test(path) ||
+    /[\p{Cc}\p{Cf}\p{Cs}]/u.test(path) ||
+    path.split('/').some((part) => !part || part === '.' || part === '..')
+  )
+    throw new Error(`Unsafe Deltamod path: ${value}`);
+  return path;
 }
-
-function findPatchNodes(xmlDocument) {
-  if (!xmlDocument) return [];
-  const root = xmlDocument.documentElement || xmlDocument;
-  if (!root) return [];
-  if (root.tagName && root.tagName.toLowerCase() === 'patch') return [root];
-  return Array.from(root.getElementsByTagName?.('patch') || []);
-}
-
-function mapDeltamodGame(gameId) {
-  if (!gameId || typeof gameId !== 'string') return null;
-  return DELTAMOD_GAME_MAP[gameId.trim().toLowerCase()];
-}
-
-function resolveTargetGame(meta) {
-  const mappedGame = mapDeltamodGame(meta.game);
-  if (mappedGame) return mappedGame;
-  if (meta.demoMod) return 'deltarunedemo';
-  return 'deltarune';
-}
-
-function resolveGameVersion(game, deltamodInfo) {
-  if (game !== 'deltarune') return '';
-  return deltamodInfo.deltaruneTargetVersion || '';
-}
-
-async function readDeltamodInfo(infoEntry) {
-  const text = await infoEntry.async('string');
-  try {
-    return /\.toml$/i.test(infoEntry.name) ? parseToml(text) : JSON.parse(text);
-  } catch (error) {
-    throw new Error(`Failed to parse ${infoEntry.name.split('/').pop()}: ${error.message}`);
-  }
-}
-
-function normalizeContentKey(chapterKey, targetGame) {
-  if (targetGame !== 'deltarune') {
-    return getGameDefinition(targetGame).tabs[0].id;
-  }
-  if (chapterKey === 'demo') {
-    return 'deltarune_0';
-  }
-  if (/^\d+$/.test(chapterKey)) {
-    return `deltarune_${chapterKey}`;
-  }
-  return chapterKey;
-}
-
-function parsePatchTarget(toPath, targetGame) {
-  const normalized = String(toPath || '').replace(/\\/g, '/').replace(/^\.\/+/, '');
-  if (!normalized) return { chapterKey: null, relativePath: '', filename: '' };
-
-  if (normalized.toLowerCase().includes('demo')) {
-    return { chapterKey: 'demo', relativePath: '', filename: normalized.split('/').pop() || '' };
-  }
-  
-  if (normalized.toLowerCase().includes('pizzatower')) {
-    return { chapterKey: 'pizzatower', relativePath: '', filename: normalized.split('/').pop() || '' };
-  }
-  
-  if (normalized.toLowerCase().includes('undertale')) {
-    return { chapterKey: 'undertale', relativePath: '', filename: normalized.split('/').pop() || '' };
-  }
-
-  const chapterMatch = normalized.match(/chapter[_-]?(\d+)/i);
-  const chapterKey = chapterMatch ? chapterMatch[1] : '0';
-  const stripped = normalized.replace(/chapter[_-]?\d+[\\/_]?windows?[/\\]?/i, '');
-  const slashIndex = stripped.lastIndexOf('/');
-
-  if (slashIndex === -1) {
-    return { chapterKey, relativePath: '', filename: stripped };
-  }
-
-  return {
-    chapterKey,
-    relativePath: stripped.slice(0, slashIndex + 1),
-    filename: stripped.slice(slashIndex + 1)
-  };
-}
-
-function buildStoredPath(relativePath, filename) {
-  return relativePath ? `${relativePath}${filename}` : filename;
-}
-
-function generateModId(metadata, gamebananaMetadata = {}) {
-  if (gamebananaMetadata.mod_id) {
-    return `gb_${gamebananaMetadata.mod_id}`;
-  }
-  
-  const packageId = metadata.packageID || '';
-  if (packageId && packageId !== 'und.und.und') {
-    return packageId.replace(/\./g, '_');
-  }
-  
-  const name = metadata.name || 'unnamed';
-  const randomSuffix = Math.random().toString(36).slice(2, 10);
-  return `local_${name.toLowerCase().replace(/\s+/g, '_')}_${randomSuffix}`;
-}
-
-export async function convertDeltamodArchive(zipEntries, gamebananaMetadata = {}) {
-  const infoEntry = Object.values(zipEntries).find((entry) => 
-    !entry.dir && /(^|\/)(deltamodInfo\.json|_deltamodInfo\.json|meta\.(json|toml))$/i.test(entry.name)
+export async function convertDeltamodArchive(assets) {
+  const files = assets.files,
+    keys = Object.keys(files);
+  const metadataNames = keys.filter((path) =>
+    /^(?:meta\.(?:json|toml)|_deltamodInfo\.json)$/i.test(path)
   );
-  const xmlEntry = Object.values(zipEntries).find((entry) => 
-    !entry.dir && /(^|\/)modding\.xml$/i.test(entry.name)
-  );
-
-  if (!infoEntry || !xmlEntry) {
-    throw new Error('Invalid Deltamod archive: metadata or modding.xml is missing');
-  }
-
-  const deltamodInfo = await readDeltamodInfo(infoEntry);
-  const metadata = deltamodInfo.metadata || {};
-
-  const xmlText = await xmlEntry.async('string');
+  const xmlNames = keys.filter((path) => /^modding\.xml$/i.test(path));
+  if (metadataNames.length !== 1 || xmlNames.length !== 1)
+    throw new Error(
+      'Deltamod needs one JSON/TOML metadata file and modding.xml.'
+    );
+  const metadataName = metadataNames[0],
+    xmlName = xmlNames[0];
+  if (
+    files[metadataName].byteLength > 4 * 1024 * 1024 ||
+    files[xmlName].byteLength > 4 * 1024 * 1024
+  )
+    throw new Error('Deltamod metadata or XML exceeds 4 MiB.');
+  const info = metadataName.toLowerCase().endsWith('.toml')
+    ? parseToml(decode(files[metadataName]), { maxDepth: 64 })
+    : parseConfigJson(decode(files[metadataName]));
+  const meta = info.metadata || {};
+  let xmlText = decode(files[xmlName]);
+  if (
+    xmlText.length > 4 * 1024 * 1024 ||
+    /<!\s*(?:DOCTYPE|ENTITY)/i.test(xmlText)
+  )
+    throw new Error('Unsafe or oversized Deltamod XML.');
+  xmlText = xmlText.replace(/^\s*<\?xml[^?]*\?>/, '');
   const parser = new DOMParser();
-  let xml;
-
-  try {
-    xml = parser.parseFromString(xmlText, 'application/xml');
-    if (xml.querySelector?.('parsererror')) {
-      // Try wrapping in a patches root like G3M does.
-      xml = parser.parseFromString(
-        `<?xml version="1.0" encoding="UTF-8"?><patches>${xmlText}</patches>`, 
-        'application/xml'
-      );
+  const parse = (text) => {
+    try {
+      return parser.parseFromString(text, 'application/xml');
+    } catch {
+      return null;
     }
-  } catch (error) {
-    throw new Error(`Failed to parse modding.xml: ${error.message}`);
-  }
-
-  const targetGame = resolveTargetGame(metadata);
-  const gameVersion = resolveGameVersion(targetGame, deltamodInfo);
-  const modId = generateModId(metadata, gamebananaMetadata);
-  
-  const files = {};
-  const assets = { tabs: {}, icon: null, infoFiles: [] };
-
-  // Process patches using G3M-compatible content keys.
-  for (const patchNode of findPatchNodes(xml)) {
-    const patchTarget = readAttribute(patchNode, 'to');
-    const patchSource = readAttribute(patchNode, 'patch');
-    const patchType = readAttribute(patchNode, 'type').trim().toLowerCase();
-
-    if (!patchTarget || !patchSource || !patchType) {
-      console.warn('Skipping patch with missing fields', { patchTarget, patchSource, patchType });
-      continue;
-    }
-
-    const { chapterKey, relativePath, filename } = parsePatchTarget(patchTarget, targetGame);
-    if (!chapterKey) {
-      console.warn('Could not determine chapter for path:', patchTarget);
-      continue;
-    }
-
-    const contentKey = normalizeContentKey(chapterKey, targetGame);
-    const tabFilesKey = mapConfigFileKeyToTabFilesKey(contentKey, targetGame);
-
-    if (!files[contentKey]) files[contentKey] = {};
-    if (!assets.tabs[tabFilesKey]) assets.tabs[tabFilesKey] = { dataFile: null, extraFiles: [] };
-
-    // Find the patch file in zip
-    const sourcePath = patchSource.replace(/^\.\/+/, '');
-    const sourceEntry = zipEntries[sourcePath] || 
-      Object.values(zipEntries).find((entry) => !entry.dir && entry.name.endsWith(sourcePath));
-
-    if (!sourceEntry) {
-      console.warn('Patch file not found:', sourcePath);
-      continue;
-    }
-
-    const blob = await sourceEntry.async('blob');
-    const cleanFilename = sourcePath.split('/').pop() || filename || 'asset.bin';
-    const file = new File([blob], cleanFilename, { type: blob.type || 'application/octet-stream' });
-
-    if (patchType === 'xdelta' || patchType === 'g3mpatch') {
-      const storedPath = cleanFilename;
-      files[contentKey].data_file_path = storedPath;
-      assets.tabs[tabFilesKey].dataFile = {
-        id: crypto.randomUUID?.() || `asset_${Math.random().toString(36).slice(2, 10)}`,
-        kind: 'file',
-        storedPath,
-        label: storedPath,
-        file,
-        archiveFolder: getArchiveFolderName(tabFilesKey, targetGame)
-      };
-    } else if (patchType === 'override' || patchType === 'copy') {
-      const storedPath = buildStoredPath(relativePath, filename);
-      if (!files[contentKey].extra_files) files[contentKey].extra_files = [];
-      files[contentKey].extra_files.push(storedPath);
-
-      assets.tabs[tabFilesKey].extraFiles.push({
-        id: crypto.randomUUID?.() || `asset_${Math.random().toString(36).slice(2, 10)}`,
-        kind: 'file',
-        storedPath,
-        label: storedPath,
-        file,
-        archiveFolder: getArchiveFolderName(tabFilesKey, targetGame)
-      });
-    } else {
-      console.warn('Unknown patch type:', patchType);
-    }
-  }
-
-  // Process icon.
-  const iconEntry = Object.values(zipEntries).find((entry) => 
-    !entry.dir && /(^|\/)(_?icon\.png)$/i.test(entry.name)
-  );
-  
-  if (iconEntry) {
-    const blob = await iconEntry.async('blob');
-    const iconFilename = iconEntry.name.split('/').pop();
-    assets.icon = {
-      id: crypto.randomUUID?.() || `asset_${Math.random().toString(36).slice(2, 10)}`,
-      kind: 'file',
-      storedPath: iconFilename,
-      label: iconFilename,
-      file: new File([blob], iconFilename, { type: blob.type || 'image/png' })
-    };
-  }
-
-  // Build config using G3M's mod_config.json structure.
-  const config = normalizeModConfigData({
-    id: modId,
-    version: metadata.version || '1.0.0',
-    name: metadata.name || 'Imported Deltamod',
-    description: metadata.description || 'No description provided',
-    author: Array.isArray(metadata.author) ? metadata.author.join(', ') : (metadata.author || 'Unknown'),
-    homepage: gamebananaMetadata.homepage || gamebananaMetadata.profile_url || metadata.url || '',
-    icon: assets.icon ? assets.icon.storedPath : '',
-    game: targetGame,
-    game_version: gameVersion,
-    tags: metadata.tags || ['other'],
-    files
-  });
-
-  // Apply GameBanana metadata if available.
-  if (gamebananaMetadata) {
-    if (gamebananaMetadata.icon && !config.icon) {
-      config.icon = gamebananaMetadata.icon;
-    }
-    
-    if (gamebananaMetadata.tags) {
-      const existingTags = Array.isArray(config.tags) ? config.tags : [];
-      const gbTags = Array.isArray(gamebananaMetadata.tags) ? gamebananaMetadata.tags : [];
-      for (const tag of gbTags) {
-        if (tag && !existingTags.includes(tag)) {
-          existingTags.push(tag);
-        }
-      }
-      config.tags = existingTags;
-    }
-  }
-
-  return {
-    format: 'deltamod',
-    config: buildModConfigData(config),
-    assets
   };
+  let xml = parse(xmlText);
+  if (
+    !xml ||
+    xml.getElementsByTagName('parsererror').length ||
+    !xml.documentElement
+  )
+    xml = parse(`<patches>${xmlText}</patches>`);
+  if (
+    !xml ||
+    xml.getElementsByTagName('parsererror').length ||
+    !xml.documentElement
+  )
+    throw new Error('Invalid modding.xml.');
+  const patches = Array.from(xml.getElementsByTagName('patch'));
+  if (!patches.length || patches.length > 5000)
+    throw new Error('Deltamod must contain 1–5000 patch entries.');
+  const mappedGame =
+    typeof meta.game === 'string' ? meta.game.trim().toLowerCase() : '';
+  const game =
+    (Object.hasOwn(gameMap, mappedGame) ? gameMap[mappedGame] : null) ||
+    (/^[a-z][a-z0-9_-]{0,63}$/.test(meta.game || '')
+      ? meta.game
+      : meta.demoMod || info.deltaruneTargetVersion === 'demo'
+        ? 'deltarunedemo'
+        : 'deltarune');
+  let id = String(meta.packageID || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, '_')
+    .replace(/^[_-]+|[_-]+$/g, '');
+  if (!/^[a-z]/.test(id) || id === 'self' || meta.packageID === 'und.und.und')
+    id =
+      'local_' +
+      String(meta.name || 'mod')
+        .toLowerCase()
+        .replace(/[^a-z0-9_-]+/g, '_')
+        .slice(0, 40) +
+      '_' +
+      crypto.randomUUID().slice(0, 8);
+  id = id.slice(0, 64).replace(/[_-]+$/, '');
+  const authors = (
+    Array.isArray(meta.author) ? meta.author : [meta.author || 'Unknown']
+  )
+    .map((value) => String(value).trim())
+    .filter(Boolean);
+  const config = {
+    config_version: '2.0.0',
+    id,
+    name: String(meta.name || 'Imported Mod')
+      .trim()
+      .normalize('NFC'),
+    version: String(meta.version || '1.0.0')
+      .trim()
+      .normalize('NFC'),
+    authors,
+    game,
+    files: [],
+  };
+  for (const patch of patches) {
+    const type = String(patch.getAttribute('type') || '').toLowerCase();
+    const source = relativePath(patch.getAttribute('patch')),
+      target = relativePath(patch.getAttribute('to'));
+    if (!Object.hasOwn(allowed, type) || !allowed[type].test(source))
+      throw new Error(`Unsupported Deltamod patch: ${type}, ${source}`);
+    let resolved = keys.find((key) => key === source);
+    if (!resolved) {
+      const matches = keys.filter(
+        (key) =>
+          key.toLowerCase() === source.toLowerCase() ||
+          key.toLowerCase().endsWith('/' + source.toLowerCase())
+      );
+      if (matches.length !== 1)
+        throw new Error(`Missing or ambiguous Deltamod source: ${source}`);
+      resolved = matches[0];
+    }
+    let destination = target;
+    if (game !== 'deltarune')
+      destination = destination.replace(/^chapter\d+_(?:windows|mac)\//, '');
+    const operation =
+      type === 'csx' ||
+      type === 'g3mpatch' ||
+      (type === 'xdelta' && !/\.win$/i.test(source))
+        ? 'patch'
+        : 'overwrite';
+    config.files.push({
+      source: '${mod_path}/' + resolved,
+      target: '${game_path}/' + destination,
+      type: operation,
+    });
+  }
+  for (const path of keys)
+    if (DOCUMENT_EXTENSIONS.test(path) && !path.includes('/'))
+      config.files.push({ source: '${mod_path}/' + path, type: 'info' });
+  const icon = keys.find((path) =>
+    /^_?icon\.(png|jpg|jpeg|gif|bmp|ico)$/i.test(path)
+  );
+  if (icon) config.icon = '${mod_path}/' + icon;
+  if (meta.description)
+    config.description = String(meta.description)
+      .trim()
+      .replace(/\r\n?/g, '\n')
+      .normalize('NFC');
+  if (meta.url) config.homepage = String(meta.url).trim();
+  const gameVersion =
+    info.deltaruneTargetVersion || info.undertaleTargetVersion;
+  if (gameVersion && gameVersion !== 'demo')
+    config.game_version = String(gameVersion).trim();
+  if (Array.isArray(meta.tags)) {
+    const tags = [
+      ...new Set(meta.tags.filter((tag) => MOD_ALLOWED_TAGS.includes(tag))),
+    ];
+    if (tags.length) config.tags = tags;
+  }
+  const converted = {
+    files: Object.fromEntries(
+      Object.entries(files).filter(
+        ([path]) => path !== metadataName && path !== xmlName
+      )
+    ),
+    directories: [...assets.directories],
+  };
+  return { config, assets: converted, format: 'deltamod' };
 }

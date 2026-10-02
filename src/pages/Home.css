@@ -6,14 +6,10 @@
 }
 
 .g3m-home__hero {
-  position: relative;
   overflow: hidden;
   border: 2px solid var(--g3m-border);
   border-radius: 7px;
-  background:
-    linear-gradient(160deg, rgba(34, 34, 34, 0.95), rgba(40, 40, 40, 0.9)),
-    radial-gradient(circle at top right, rgba(109, 233, 133, 0.16), transparent 34%);
-  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.32);
+  background: var(--g3m-elements);
   min-height: calc(100svh - 120px);
   padding: clamp(28px, 5vw, 56px);
   display: flex;
@@ -23,30 +19,11 @@
   gap: 48px;
 }
 
-.g3m-home__hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(135deg, rgba(3, 157, 91, 0.14), transparent 44%),
-    url('../assets/g3m-background.png') center/cover no-repeat;
-  opacity: 0.22;
-  mix-blend-mode: screen;
-  pointer-events: none;
-}
-
 .g3m-home__logo {
   width: 100%;
   max-width: 575px;
   height: auto;
   max-height: 138px;
-}
-
-.g3m-home__copy,
-.g3m-home__actions,
-.g3m-home__links {
-  position: relative;
-  z-index: 1;
 }
 
 .g3m-home__copy {
@@ -70,14 +47,14 @@
 
 .g3m-home__actions {
   display: flex;
-  gap: 13.8px;
+  gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
 }
 
 .g3m-home__links {
   display: flex;
-  gap: 25.3px;
+  gap: 24px;
   flex-wrap: wrap;
   justify-content: center;
 }
@@ -90,15 +67,6 @@
 }
 
 .g3m-home__links a:hover {
-  opacity: 0.84;
-}
-
-.g3m-home__copy a {
-  color: var(--g3m-secondary);
-  text-decoration: underline;
-}
-
-.g3m-home__copy a:hover {
   opacity: 0.84;
 }
 
@@ -116,4 +84,13 @@
     padding: 28px 18px;
     gap: 32px;
   }
+}
+
+.home-feedback {
+  height: 90px;
+  max-width: 100%;
+  overflow-y: auto;
+}
+.home-feedback p {
+  margin: 4px 0;
 }

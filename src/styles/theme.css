@@ -1,5 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@700&display=swap');
-
+@font-face {
+  font-family: 'Noto Sans';
+  src: url('/fonts/NotoSans-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 :root {
   color-scheme: dark;
   --g3m-background: #282828;
@@ -9,163 +14,215 @@
   --g3m-border: #039d5b;
   --g3m-text: #e8e9eb;
   --g3m-secondary: #6de985;
-  --g3m-muted: #96b2a0;
-  --g3m-danger: #9e2929;
-  --g3m-transition: 140ms ease;
+  --g3m-muted: #b1b9b5;
+  --g3m-danger: #ff9f9f;
   --g3m-radius: 7px;
+  --g3m-border-width: 2px;
 }
-
 * {
   box-sizing: border-box;
 }
-
-html,
-body,
-#root {
-  min-height: 100%;
+*,
+*::before,
+*::after {
+  border-width: var(--g3m-border-width);
 }
-
+html {
+  scrollbar-gutter: stable;
+}
 body {
   margin: 0;
-  font-family: 'Noto Sans', sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
+  font:
+    700 14px/1.5 'Noto Sans',
+    system-ui,
+    sans-serif;
   color: var(--g3m-text);
   background: var(--g3m-background);
 }
-
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background:
-    linear-gradient(90deg, transparent 0, rgba(236, 237, 239, 0.025) 1px, transparent 1px),
-    linear-gradient(0deg, transparent 0, rgba(236, 237, 239, 0.02) 1px, transparent 1px);
-  background-size: 42px 42px;
-  opacity: 0.22;
-  pointer-events: none;
+h1 {
+  margin: 0 0 16px;
+  font-size: 22px;
+  line-height: 1.25;
 }
-
-a,
+h2 {
+  font-size: 16px;
+  margin: 0 0 12px;
+}
+a {
+  color: var(--g3m-secondary);
+}
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
+  color: inherit;
 }
-
 button,
-input,
-select {
-  appearance: none;
-}
-
-button,
-input[type='text'],
-input[type='url'],
-input[type='file'],
-select {
+input:not([type='checkbox']),
+select,
+textarea {
+  border: var(--g3m-border-width) solid var(--g3m-border);
   border-radius: var(--g3m-radius);
-  border: 2px solid var(--g3m-border);
-  background: rgba(34, 34, 34, 0.92);
-  color: var(--g3m-text);
-  transition:
-    border-color var(--g3m-transition),
-    background-color var(--g3m-transition),
-    transform var(--g3m-transition);
-  padding: 10px 16px;
-  box-sizing: border-box;
-  font-family: 'Noto Sans', sans-serif;
-  font-size: 0.9rem;
+  padding: 8px 12px;
+  background: var(--g3m-elements);
+  min-height: 40px;
 }
-
-input[type='text'],
-input[type='url'],
-input[type='file'],
-select {
+button {
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+button:hover:enabled {
+  background: var(--g3m-hover);
+}
+button:disabled,
+input:disabled,
+select:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+input:not([type='checkbox']),
+select,
+textarea {
   width: 100%;
-  padding: 10px 14px;
-  box-sizing: border-box;
+  min-width: 0;
 }
-
-button:hover,
-input:hover,
-select:hover,
-button:focus-visible,
+select {
+  padding-right: 32px;
+}
+textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+:focus-visible {
+  outline: var(--g3m-border-width) solid var(--g3m-select);
+  outline-offset: 2px;
+}
 input:focus-visible,
-select:focus-visible {
-  outline: none;
-  border-color: var(--g3m-border);
+select:focus-visible,
+textarea:focus-visible {
+  border-color: var(--g3m-hover);
 }
-
+input[type='checkbox'] {
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  margin: 0;
+  background: var(--g3m-elements);
+  border: var(--g3m-border-width) solid var(--g3m-border);
+  border-radius: var(--g3m-radius);
+  cursor: pointer;
+}
+input[type='checkbox']:checked {
+  background: var(--g3m-select);
+}
+.g3m-icon {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  background: currentColor;
+  mask: var(--icon) center / contain no-repeat;
+}
+.operation-soft {
+  color: #6aeb7e;
+}
+.operation-hard {
+  color: #6a8eeb;
+}
+.g3m-app__toolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px max(16px, calc((100vw - 1240px) / 2));
+}
+.g3m-inline-error {
+  color: var(--g3m-danger);
+  padding: 12px;
+  border-left: var(--g3m-border-width) solid currentColor;
+  overflow-wrap: anywhere;
+}
+.g3m-inline-error button {
+  border: 0;
+  text-align: left;
+  justify-content: flex-start;
+  color: inherit;
+  padding: 4px;
+}
+.g3m-inline-note,
+small {
+  color: var(--g3m-muted);
+  font-size: 12px;
+}
+@media (pointer: coarse) {
+  button,
+  select {
+    min-height: 44px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
 input::file-selector-button {
+  font: inherit;
+  color: inherit;
+  border: var(--g3m-border-width) solid var(--g3m-border);
+  border-radius: var(--g3m-radius);
+  background: var(--g3m-elements);
+  padding: 8px 12px;
   margin-right: 12px;
+  cursor: pointer;
+}
+input::file-selector-button:hover {
+  background: var(--g3m-hover);
+}
+@media (forced-colors: active) {
+  input[type='checkbox'] {
+    forced-color-adjust: none;
+    background: Canvas;
+    border-color: ButtonText;
+  }
+  input[type='checkbox']:checked {
+    background: Highlight;
+    border-color: Highlight;
+  }
+  .g3m-icon {
+    forced-color-adjust: none;
+    color: ButtonText;
+  }
 }
 
-.g3m-button {
-  font-family: 'Noto Sans', sans-serif !important;
-  background-color: var(--g3m-elements) !important;
-  border: 2px solid var(--g3m-border) !important;
-  color: var(--g3m-text) !important;
-  padding: 10px 16px !important;
-  border-radius: 7px !important;
-  cursor: pointer !important;
-  font-size: 0.9rem !important;
-  box-sizing: border-box !important;
-  min-height: auto !important;
-  max-height: none !important;
-  height: auto !important;
-  transition: background-color var(--g3m-transition), transform var(--g3m-transition) !important;
+.is-invalid,
+[aria-invalid='true'],
+[aria-invalid='true']:focus-visible {
+  border-color: var(--g3m-danger);
+}
+.field-error {
+  color: var(--g3m-danger);
+  overflow-wrap: anywhere;
 }
 
-.g3m-files-toolbar .g3m-button,
-.g3m-editor__footer-actions .g3m-button,
-.g3m-icon-buttons .g3m-button {
-  line-height: 1.2 !important;
+[data-drop-active] {
+  outline: var(--g3m-border-width) solid var(--g3m-secondary);
+  outline-offset: -2px;
+  background-color: var(--g3m-hover);
+}
+.package-files li[draggable] {
+  cursor: grab;
 }
 
-.g3m-button:hover {
-  background: rgba(97, 107, 120, 0.58) !important;
-  transform: scale(1.02);
-  transition: background-color var(--g3m-transition), transform var(--g3m-transition);
+.button-label {
+  display: inline-grid;
 }
-
-.g3m-button--primary {
-  background: rgba(3, 157, 91, 0.22);
-  border-color: var(--g3m-border);
-  transition: background-color var(--g3m-transition), transform var(--g3m-transition) !important;
-}
-
-.g3m-button--primary:hover {
-  background: rgba(3, 157, 91, 0.32) !important;
-  transform: scale(1.02);
-  transition: background-color var(--g3m-transition), transform var(--g3m-transition);
-}
-
-.g3m-button--ghost {
-  background: rgba(40, 40, 40, 0.72);
-  transition: background-color var(--g3m-transition), transform var(--g3m-transition) !important;
-}
-
-.g3m-button--ghost:hover {
-  background: rgba(97, 107, 120, 0.58) !important;
-  transform: scale(1.02);
-  transition: background-color var(--g3m-transition), transform var(--g3m-transition);
-}
-
-.g3m-button--danger {
-  background: rgba(158, 41, 41, 0.22);
-  border-color: var(--g3m-border);
-  transition: background-color var(--g3m-transition), transform var(--g3m-transition) !important;
-}
-
-.g3m-button--danger:hover {
-  background: rgba(158, 41, 41, 0.36) !important;
-  transform: scale(1.02);
-  transition: background-color var(--g3m-transition), transform var(--g3m-transition);
-}
-
-.g3m-tabbar__tab:hover {
-  background: rgba(97, 107, 120, 0.58);
-  transform: scale(1.02);
-  transition: background-color var(--g3m-transition), transform var(--g3m-transition);
+.button-label > span {
+  grid-area: 1 / 1;
 }

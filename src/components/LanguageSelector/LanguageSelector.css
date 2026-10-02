@@ -1,12 +1,3 @@
-.g3m-app__toolbar {
-  width: min(1280px, calc(100vw - 40px));
-  min-height: 72px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
-
 .language-selector {
   position: relative;
   z-index: 1;
@@ -18,13 +9,5 @@
   max-width: 100%;
   padding: 10px 14px;
   border-radius: 7px;
-  background: rgba(34, 34, 34, 0.92);
-  backdrop-filter: blur(10px);
-}
-
-@media (max-width: 640px) {
-  .g3m-app__toolbar {
-    width: calc(100vw - 20px);
-    min-height: 62px;
-  }
+  background: var(--g3m-elements);
 }

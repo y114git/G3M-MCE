@@ -8,7 +8,7 @@ const languages = [
   { code: 'zh_tw', name: '繁體中文' },
   { code: 'es', name: 'Español' },
   { code: 'ja', name: '日本語' },
-  { code: 'ko', name: '한국어' }
+  { code: 'ko', name: '한국어' },
 ];
 
 export default function LanguageSelector() {
@@ -16,7 +16,11 @@ export default function LanguageSelector() {
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
-    localStorage.setItem('language', lng);
+    try {
+      localStorage.setItem('language', lng);
+    } catch {
+      /* The language still changes when storage is unavailable. */
+    }
     document.body.setAttribute('data-lang', lng);
   };
 
@@ -37,4 +41,3 @@ export default function LanguageSelector() {
     </div>
   );
 }
-

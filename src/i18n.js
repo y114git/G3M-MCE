@@ -15,26 +15,29 @@ const resources = {
   zh_tw: { translation: zh_tw },
   es: { translation: es },
   ja: { translation: ja },
-  ko: { translation: ko }
+  ko: { translation: ko },
 };
 
-const savedLanguage = localStorage.getItem('language') || 'en';
+let savedLanguage = 'en';
+try {
+  savedLanguage = localStorage.getItem('language') || 'en';
+} catch {
+  /* Storage can be disabled in private browsing. */
+}
+if (!Object.hasOwn(resources, savedLanguage)) savedLanguage = 'en';
 
-i18n
-  .use(initReactI18next)
-  .init({
-    resources,
-    lng: savedLanguage,
-    fallbackLng: 'en',
-    interpolation: {
-      escapeValue: false,
-      formatSeparator: ',',
-      format: function(value, format, lng) {
-        if (format === 'uppercase') return value.toUpperCase();
-        return value;
-      }
-    }
-  });
+i18n.use(initReactI18next).init({
+  resources,
+  lng: savedLanguage,
+  fallbackLng: 'en',
+  interpolation: {
+    escapeValue: false,
+    formatSeparator: ',',
+    format: function (value, format, lng) {
+      if (format === 'uppercase') return value.toUpperCase();
+      return value;
+    },
+  },
+});
 
 export default i18n;
-
