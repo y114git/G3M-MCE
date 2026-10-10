@@ -110,7 +110,7 @@ test('keeps a folder used by an operation after its last bundled file is removed
   zip.file('mod_config.json', JSON.stringify(manifest));
   zip.file('folder/file.txt', 'Payload');
   await page.goto('./#/edit');
-  await page.getByLabel('Select archive or config').setInputFiles({
+  await page.getByLabel('Select archive, config, or file').setInputFiles({
     name: 'folder.zip',
     mimeType: 'application/zip',
     buffer: await zip.generateAsync({ type: 'nodebuffer' }),
@@ -203,7 +203,7 @@ for (const format of ['json', 'toml']) {
     zip.file('second.csx', 'Second patch');
     zip.file('scripts/helper.cs', 'Dependency');
     await page.goto('./#/edit');
-    await page.getByLabel('Select archive or config').setInputFiles({
+    await page.getByLabel('Select archive, config, or file').setInputFiles({
       name: 'deltamod.zip',
       mimeType: 'application/zip',
       buffer: await zip.generateAsync({ type: 'nodebuffer' }),
@@ -316,7 +316,7 @@ test('opens current and old archives, preserves unlisted files, supports custom 
   zip.file('wrapper/patch.csx', 'script');
   zip.file('wrapper/helper.cs', 'dependency');
   await page.goto('./#/edit');
-  await page.getByLabel('Select archive or config').setInputFiles({
+  await page.getByLabel('Select archive, config, or file').setInputFiles({
     name: 'mod.zip',
     mimeType: 'application/zip',
     buffer: await zip.generateAsync({ type: 'nodebuffer' }),
@@ -377,7 +377,7 @@ test('direct export saves a ZIP and explains the local-file handoff', async ({
   zip.file('mod_config.json', JSON.stringify(config()));
   zip.file('patch.csx', 'script');
   await page.goto('./#/edit');
-  await page.getByLabel('Select archive or config').setInputFiles({
+  await page.getByLabel('Select archive, config, or file').setInputFiles({
     name: 'mod.zip',
     mimeType: 'application/zip',
     buffer: await zip.generateAsync({ type: 'nodebuffer' }),
@@ -442,7 +442,7 @@ test('selects an archive member, groups operations and includes info without a t
   mod.file('mod_config.json', JSON.stringify({ ...config(), files: [] }));
   mod.file('assets.zip', await nested.generateAsync({ type: 'nodebuffer' }));
   await page.goto('./#/edit');
-  await page.getByLabel('Select archive or config').setInputFiles({
+  await page.getByLabel('Select archive, config, or file').setInputFiles({
     name: 'mod.zip',
     mimeType: 'application/zip',
     buffer: await mod.generateAsync({ type: 'nodebuffer' }),
@@ -485,7 +485,7 @@ test('opens an old config, converts GameBanana references and can fix a failed i
   page,
 }) => {
   await page.goto('./#/edit');
-  const picker = page.getByLabel('Select archive or config');
+  const picker = page.getByLabel('Select archive, config, or file');
   await picker.setInputFiles({
     name: 'bad.json',
     mimeType: 'application/json',
@@ -578,7 +578,7 @@ test('keeps native tabs, icons and 2px outlines across languages and viewport si
   page.once('dialog', (dialog) => dialog.accept());
   await page.goto('./#/edit');
   await assertAppearance(page);
-  await page.getByLabel('Select archive or config').setInputFiles({
+  await page.getByLabel('Select archive, config, or file').setInputFiles({
     name: 'mod_config.json',
     mimeType: 'application/json',
     buffer: Buffer.from(JSON.stringify(manifest)),
@@ -748,7 +748,7 @@ test('keeps a renamed group selected while moving it and preserves its contents'
   const zip = new JSZip();
   zip.file('mod_config.json', JSON.stringify(manifest));
   zip.file('readme.txt', 'Documentation');
-  await page.getByLabel('Select archive or config').setInputFiles({
+  await page.getByLabel('Select archive, config, or file').setInputFiles({
     name: 'groups.zip',
     mimeType: 'application/zip',
     buffer: await zip.generateAsync({ type: 'nodebuffer' }),
@@ -823,7 +823,7 @@ test('automatically highlights every tab and validates both export buttons with 
   zip.file('mod_config.json', JSON.stringify(manifest));
   zip.file('patch.csx', 'script');
   await page.goto('./#/edit');
-  await page.getByLabel('Select archive or config').setInputFiles({
+  await page.getByLabel('Select archive, config, or file').setInputFiles({
     name: 'mod.zip',
     mimeType: 'application/zip',
     buffer: await zip.generateAsync({ type: 'nodebuffer' }),
@@ -1252,7 +1252,7 @@ test('keeps tabs, buttons and width stable and restores tab scroll positions', a
     await page.setViewportSize({ width, height: 844 });
     await page.goto('./#/edit');
     await page.reload();
-    await page.getByLabel('Select archive or config').setInputFiles({
+    await page.getByLabel('Select archive, config, or file').setInputFiles({
       name: 'mod_config.json',
       mimeType: 'application/json',
       buffer: Buffer.from(
@@ -1383,3 +1383,4 @@ async function verifyNativeDropArchive(bytes) {
   );
   expect(result.status, result.stderr).toBe(0);
 }
+
