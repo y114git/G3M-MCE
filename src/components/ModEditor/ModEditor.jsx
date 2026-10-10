@@ -104,7 +104,7 @@ const clean = (config) =>
           (!Array.isArray(value) || value.length))
     )
   );
-const FieldErrors = createContext({});
+const FieldErrors = createContext({ errors: {}, onTouched: () => {} });
 const samePath = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
 function Field({
@@ -120,7 +120,8 @@ function Field({
   children,
   ...props
 }) {
-  const error = useContext(FieldErrors)[id];
+  const { errors, onTouched } = useContext(FieldErrors);
+  const error = errors[id];
   const Input = as || (multiline ? 'textarea' : 'input');
   return (
     <div className="g3m-field" {...dropProps}>
@@ -130,7 +131,10 @@ function Field({
           id={id}
           type={Input === 'input' ? 'text' : undefined}
           value={value ?? ''}
-          onChange={(event) => onChange(event.target.value)}
+          onChange={(event) => {
+            onTouched(id);
+            onChange(event.target.value);
+          }}
           aria-invalid={error ? true : undefined}
           aria-describedby={
             error ? `${id}-error` : hint ? `${id}-hint` : undefined
@@ -401,6 +405,7 @@ export default function ModEditor({
     );
   const [packageIssues, setPackageIssues] = useState([]);
   const [submitted, setSubmitted] = useState(false);
+  const [touched, setTouched] = useState(() => new Set());
   const [listSelections, setListSelections] = useState({
     placeholders: 0,
     dependencies: 0,
@@ -844,8 +849,12 @@ export default function ModEditor({
   };
   const issues = [...schemaIssues, ...packageIssues];
   const locations = issues.map(locateIssue);
+  const visibleIssues = submitted
+    ? issues
+    : issues.filter((issue, index) => touched.has(locations[index].id));
+  const visibleLocations = visibleIssues.map(locateIssue);
   const fieldErrors = {};
-  for (const issue of issues) {
+  for (const issue of visibleIssues) {
     const location = locateIssue(issue);
     if (
       (!location.operation || samePath(location.operation, selected)) &&
@@ -1013,7 +1022,7 @@ export default function ModEditor({
               aria-selected={tab === name}
               aria-controls={`panel-${name}`}
               tabIndex={tab === name ? 0 : -1}
-              className={`${tab === name ? 'is-active' : ''} ${locations.some((location) => location.tab === name) ? 'is-invalid' : ''}`}
+              className={`${tab === name ? 'is-active' : ''} ${visibleLocations.some((location) => location.tab === name) ? 'is-invalid' : ''}`}
               onDragEnter={(event) => {
                 if (
                   name !== tab &&
@@ -1080,7 +1089,7 @@ export default function ModEditor({
               </ul>
             </div>
           )}
-          <FieldErrors.Provider value={fieldErrors}>
+          <FieldErrors.Provider value={{ errors: fieldErrors, onTouched: (id) => setTouched((previous) => new Set(previous).add(id)) }}>
             <fieldset className="editor-fields" disabled={busy}>
               {tab === 'metadata' && (
                 <div className="metadata-grid">
@@ -1209,6 +1218,13 @@ export default function ModEditor({
                   </fieldset>
 
                   <Field
+                    id="id"
+                    label={t('mce.modId')}
+                    value={config.id}
+                    onChange={(value) => update('id', value)}
+                    hint={t('mce.idHint')}
+                  />
+                  <Field
                     id="version"
                     label={t('ui.overall_mod_version')}
                     value={config.version}
@@ -1219,13 +1235,6 @@ export default function ModEditor({
                     label={t('ui.game_version_label')}
                     value={config.game_version}
                     onChange={(value) => update('game_version', value)}
-                  />
-                  <Field
-                    id="id"
-                    label={t('mce.modId')}
-                    value={config.id}
-                    onChange={(value) => update('id', value)}
-                    hint={t('mce.idHint')}
                   />
                 </div>
               )}
@@ -1833,13 +1842,11 @@ export default function ModEditor({
             </fieldset>
           </FieldErrors.Provider>
         </div>
-        <p className="editor-status" role="status">
-          {typeof status === 'string'
-            ? status
-            : status
-              ? t(status.key)
-              : '\u00a0'}
-        </p>
+        {status && (
+          <p className="editor-status" role="status">
+            {typeof status === 'string' ? status : t(status.key)}
+          </p>
+        )}
         <footer className="g3m-editor__footer-actions">
           <button onClick={() => navigate('/')} disabled={busy}>
             <Icon name="cross_icon" />
@@ -1922,7 +1929,7 @@ export default function ModEditor({
         >
           <h2 id="handoff-title">{t('mce.exportToG3M')}</h2>
           <p>{t('mce.handoffHint', { filename: handoff })}</p>
-          <FieldErrors.Provider value={{ 'saved-path': handoffError }}>
+          <FieldErrors.Provider value={{ errors: { 'saved-path': handoffError }, onTouched: () => {} }}>
             <Field
               id="saved-path"
               label={t('mce.savedPath')}
@@ -1964,3 +1971,4 @@ export default function ModEditor({
     </main>
   );
 }
+

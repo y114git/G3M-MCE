@@ -44,12 +44,31 @@
   padding: 16px;
   margin-top: -2px;
   height: clamp(580px, calc(100svh - 250px), 900px);
-  overflow-y: auto;
+  overflow-y: scroll;
   scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--g3m-border) transparent;
   overflow-anchor: none;
   border: var(--g3m-border-width) solid var(--g3m-border);
   border-radius: var(--g3m-radius);
 }
+.editor-content::-webkit-scrollbar {
+  width: 12px;
+}
+.editor-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+.editor-content::-webkit-scrollbar-thumb {
+  background: var(--g3m-border);
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+.editor-content::-webkit-scrollbar-thumb:hover {
+  background: var(--g3m-secondary);
+  background-clip: padding-box;
+}
+
 .g3m-field {
   display: grid;
   grid-template-columns: 180px minmax(0, 1fr);
