@@ -111,7 +111,7 @@
   },
   "mce": {
     "dropFiles": "將檔案或資料夾拖到這裡，或使用按鈕。",
-    "dropImport": "將模組壓縮檔或設定拖到這裡進行編輯。",
+    "dropImport": "將模組壓縮檔、設定或檔案拖到這裡進行編輯。",
     "dropSource": "將檔案或資料夾拖到這裡以指定路徑。",
     "dropIcon": "將圖片拖到這裡作為圖示。",
     "dropHash": "將檔案拖到這裡計算雜湊值。",
@@ -153,9 +153,9 @@
     "removeFileConfirm": "從 ZIP 中移除 {{path}}？使用此檔案的操作需要其他來源。",
     "duplicateFiles": "此路徑已有檔案。請先移除再取代。",
     "configReserved": "請在編輯模組頁面開啟 mod_config.json；匯出時編輯器會寫入此檔案。",
-    "importHint": "開啟 G3M ZIP、Deltamod ZIP 或 mod_config.json。",
+    "importHint": "開啟 G3M 或 Deltamod ZIP、mod_config.json 或任何檔案。",
     "invalidImport": "無法開啟此模組的壓縮檔或設定。",
-    "importConfig": "選擇壓縮檔或設定",
+    "importConfig": "選擇壓縮檔、設定或檔案",
     "browseZip": "瀏覽打包的 ZIP",
     "chooseZip": "選擇 ZIP",
     "zipMember": "ZIP 內的來源",
@@ -164,3 +164,4 @@
     "invalidSavedPath": "請輸入已儲存 ZIP 的完整路徑，例如 C:/Users/Name/Downloads/mod.zip。"
   }
 }
+

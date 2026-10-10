@@ -111,7 +111,7 @@
   },
   "mce": {
     "dropFiles": "将文件或文件夹拖到这里，或使用按钮。",
-    "dropImport": "将模组压缩包或配置拖到这里进行编辑。",
+    "dropImport": "将模组压缩包、配置或文件拖到这里进行编辑。",
     "dropSource": "将文件或文件夹拖到这里以指定路径。",
     "dropIcon": "将图片拖到这里用作图标。",
     "dropHash": "将文件拖到这里计算哈希值。",
@@ -153,9 +153,9 @@
     "removeFileConfirm": "从 ZIP 中删除 {{path}}？使用此文件的操作需要其他源文件。",
     "duplicateFiles": "此路径已有文件。请先删除再替换。",
     "configReserved": "请在编辑模组页面打开 mod_config.json；导出时编辑器会写入此文件。",
-    "importHint": "打开 G3M ZIP、Deltamod ZIP 或 mod_config.json。",
+    "importHint": "打开 G3M 或 Deltamod ZIP、mod_config.json 或任意文件。",
     "invalidImport": "无法打开此模组的压缩包或配置。",
-    "importConfig": "选择压缩包或配置",
+    "importConfig": "选择压缩包、配置或文件",
     "browseZip": "浏览打包的 ZIP",
     "chooseZip": "选择 ZIP",
     "zipMember": "ZIP 内的源文件",
@@ -164,3 +164,4 @@
     "invalidSavedPath": "请输入已保存 ZIP 的完整路径，例如 C:/Users/Name/Downloads/mod.zip。"
   }
 }
+

@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '../navigation';
 import ModEditor from '../components/ModEditor/ModEditor';
+import { createEmptyModConfig } from '../data/modConfig';
+import { assetsFromFiles, useFileDrop } from '../utils/fileDrop';
 import { importConfigFile, importZipArchive } from '../utils/zipHandler';
-import { useFileDrop } from '../utils/fileDrop';
 
-export default function EditMod({ initialFile, onFileConsumed }) {
+export default function EditMod({ initialDrop, onDropConsumed }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [importState, setImportState] = useState({
@@ -22,9 +23,11 @@ export default function EditMod({ initialFile, onFileConsumed }) {
     setImportState((prev) => ({ ...prev, loading: true, error: '' }));
 
     try {
-      const imported = await (/\.json$/i.test(selectedFile.name)
-        ? importConfigFile(selectedFile)
-        : importZipArchive(selectedFile));
+      const imported = /\.json$/i.test(selectedFile.name)
+        ? await importConfigFile(selectedFile)
+        : /\.zip$/i.test(selectedFile.name)
+          ? await importZipArchive(selectedFile)
+          : { config: createEmptyModConfig(), assets: assetsFromFiles([selectedFile]) };
       setImportState({
         loading: false,
         error: '',
@@ -40,26 +43,31 @@ export default function EditMod({ initialFile, onFileConsumed }) {
       });
     }
   };
+  const openDrop = async (picked) => {
+    const files = Object.values(picked.files);
+    if (files.length === 1 && !picked.directories.length && /\.(?:zip|json)$/i.test(files[0].name)) {
+      await openArchive(files[0]);
+      return;
+    }
+    setImportState({ loading: false, error: '', config: createEmptyModConfig(), assets: picked });
+  };
   const drop = useFileDrop({
     disabled: importState.loading,
     onBusyChange: (loading) =>
       setImportState((previous) => ({ ...previous, loading })),
     onDrop: async (picked) => {
-      const files = Object.values(picked.files);
-      if (files.length !== 1 || picked.directories.length)
-        throw new Error(t('mce.singleFile'));
-      await openArchive(files[0]);
+      await openDrop(picked);
     },
     onError: (message) =>
       setImportState((previous) => ({ ...previous, error: message })),
   });
   useEffect(() => {
-    if (initialFile && initialOpened.current !== initialFile) {
-      initialOpened.current = initialFile;
-      openArchive(initialFile);
-      onFileConsumed();
+    if (initialDrop && initialOpened.current !== initialDrop) {
+      initialOpened.current = initialDrop;
+      openDrop(initialDrop);
+      onDropConsumed();
     }
-  }, [initialFile]);
+  }, [initialDrop]);
 
   if (importState.config) {
     return (
@@ -83,11 +91,10 @@ export default function EditMod({ initialFile, onFileConsumed }) {
           <span>{t('mce.importConfig')}</span>
           <input
             type="file"
-            accept=".zip,.json"
             onChange={(event) => {
               const file = event.target.files?.[0];
               event.target.value = '';
-              openArchive(file);
+              if (file) openArchive(file);
             }}
             disabled={importState.loading}
           />
@@ -112,3 +119,4 @@ export default function EditMod({ initialFile, onFileConsumed }) {
     </main>
   );
 }
+

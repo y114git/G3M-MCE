@@ -111,7 +111,7 @@
   },
   "mce": {
     "dropFiles": "파일이나 폴더를 여기로 끌어놓거나 버튼을 사용하세요.",
-    "dropImport": "모드 압축 파일이나 설정을 여기로 끌어놓아 편집하세요.",
+    "dropImport": "모드 압축 파일, 설정 또는 파일을 여기로 끌어놓아 편집하세요.",
     "dropSource": "파일이나 폴더를 여기로 끌어놓아 경로를 지정하세요.",
     "dropIcon": "이미지를 여기로 끌어놓아 아이콘으로 사용하세요.",
     "dropHash": "파일을 여기로 끌어놓아 해시를 계산하세요.",
@@ -153,9 +153,9 @@
     "removeFileConfirm": "ZIP에서 {{path}}을 제거할까요? 이 파일을 사용하는 작업에는 다른 원본이 필요합니다.",
     "duplicateFiles": "같은 경로의 파일이 이미 포함되어 있습니다. 교체하기 전에 제거하세요.",
     "configReserved": "모드 편집 페이지에서 mod_config.json을 여세요. 내보낼 때 편집기가 이 파일을 작성합니다.",
-    "importHint": "G3M ZIP, Deltamod ZIP 또는 mod_config.json을 여세요.",
+    "importHint": "G3M 또는 Deltamod ZIP, mod_config.json 또는 모든 파일을 엽니다.",
     "invalidImport": "모드 압축 파일이나 설정을 열 수 없습니다.",
-    "importConfig": "압축 파일 또는 설정 선택",
+    "importConfig": "압축 파일, 설정 또는 파일 선택",
     "browseZip": "포함된 ZIP 탐색",
     "chooseZip": "ZIP 선택",
     "zipMember": "ZIP 내부 원본",
@@ -164,3 +164,4 @@
     "invalidSavedPath": "저장한 ZIP의 전체 경로를 입력하세요. 예: C:/Users/Name/Downloads/mod.zip"
   }
 }
+

@@ -111,7 +111,7 @@
   },
   "mce": {
     "dropFiles": "ファイルやフォルダーをここにドラッグするか、ボタンを使ってください。",
-    "dropImport": "MOD のアーカイブや設定をここにドラッグして編集できます。",
+    "dropImport": "アーカイブ、設定、またはファイルをここにドラッグして編集できます。",
     "dropSource": "ファイルやフォルダーをここにドラッグすると、そのパスを指定できます。",
     "dropIcon": "画像をここにドラッグすると、アイコンに設定できます。",
     "dropHash": "ファイルをここにドラッグすると、ハッシュを計算できます。",
@@ -153,9 +153,9 @@
     "removeFileConfirm": "ZIPから{{path}}を削除しますか？このファイルを使う操作には別のソースが必要です。",
     "duplicateFiles": "同じパスのファイルがあります。置き換える前に削除してください。",
     "configReserved": "mod_config.jsonは「MOD編集」で開いてください。エクスポート時にエディターが書き込みます。",
-    "importHint": "G3M ZIP、Deltamod ZIP、またはmod_config.jsonを開きます。",
+    "importHint": "G3M または Deltamod の ZIP、mod_config.json、または任意のファイルを開きます。",
     "invalidImport": "MOD のアーカイブまたは設定を開けませんでした。",
-    "importConfig": "アーカイブまたは設定を選択",
+    "importConfig": "アーカイブ、設定、またはファイルを選択",
     "browseZip": "同梱ZIPを参照",
     "chooseZip": "ZIPを選択",
     "zipMember": "ZIP内のソース",
@@ -164,3 +164,4 @@
     "invalidSavedPath": "保存した ZIP のフルパスを入力してください。例: C:/Users/Name/Downloads/mod.zip"
   }
 }
+

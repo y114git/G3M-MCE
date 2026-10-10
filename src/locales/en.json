@@ -111,7 +111,7 @@
   },
   "mce": {
     "dropFiles": "Drop files or folders here, or use the buttons.",
-    "dropImport": "Drop a mod archive or config here to edit it.",
+    "dropImport": "Drop a mod archive, config, or file here to edit it.",
     "dropSource": "Drop a file or folder here to use its path.",
     "dropIcon": "Drop an image here to use it as the icon.",
     "dropHash": "Drop a file here to calculate its hash.",
@@ -153,9 +153,9 @@
     "removeFileConfirm": "Remove {{path}} from the ZIP? Operations using it will need another source.",
     "duplicateFiles": "A file with this path is already bundled. Remove it before adding a replacement.",
     "configReserved": "Open mod_config.json on the Edit Mod page; the editor writes it when exporting.",
-    "importHint": "Open a G3M ZIP, Deltamod ZIP, or mod_config.json.",
+    "importHint": "Open a G3M or Deltamod ZIP, mod_config.json, or any file.",
     "invalidImport": "Could not open this mod archive or configuration.",
-    "importConfig": "Select archive or config",
+    "importConfig": "Select archive, config, or file",
     "browseZip": "Browse bundled ZIP",
     "chooseZip": "Choose a ZIP",
     "zipMember": "Source inside ZIP",
@@ -164,3 +164,4 @@
     "invalidSavedPath": "Enter the full path to the saved ZIP, for example C:/Users/Name/Downloads/mod.zip."
   }
 }
+

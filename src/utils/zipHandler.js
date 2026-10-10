@@ -1,5 +1,6 @@
 import {
   buildModConfigData,
+  createEmptyModConfig,
   localRelativePath,
   operationLeaves,
   parseConfigJson,
@@ -189,14 +190,22 @@ export async function importZipArchive(input) {
     const xml = entries.filter(
       (entry) => !entry.dir && /(^|\/)modding\.xml$/i.test(entry.name)
     );
-    if (xml.length !== 1)
-      throw new Error(
-        manifests.length > 1
-          ? 'Archive contains more than one mod_config.json without an unambiguous mod root.'
-          : manifests.length
-            ? 'Files outside the mod folder make this archive ambiguous.'
-            : 'Select a G3M or Deltamod archive.'
-      );
+    if (xml.length !== 1) {
+      if (manifests.length)
+        throw new Error(
+          manifests.length > 1
+            ? 'Archive contains more than one mod_config.json without an unambiguous mod root.'
+            : 'Files outside the mod folder make this archive ambiguous.'
+        );
+      const assets = emptyAssets();
+      for (const entry of entries) {
+        if (entry.dir) assets.directories.push(entry.name);
+        else assets.files[entry.name] = await entry.async('uint8array');
+      }
+      if (!Object.keys(assets.files).length)
+        throw new Error('Archive contains no files.');
+      return { config: createEmptyModConfig(), assets, format: 'payload' };
+    }
     root = xml[0].name.slice(0, -'modding.xml'.length);
   }
   if (entries.some((entry) => !entry.dir && !entry.name.startsWith(root)))
@@ -470,3 +479,4 @@ export function downloadZip(blob, filename) {
   anchor.remove();
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
+

@@ -8,19 +8,19 @@ import EditMod from './pages/EditMod';
 function CurrentPage() {
   const path = useCurrentPath(),
     navigate = useNavigate();
-  const [initialFile, setInitialFile] = useState(null);
+  const [initialDrop, setInitialDrop] = useState(null);
   if (path === '/create') return <CreateMod />;
   if (path === '/edit')
     return (
       <EditMod
-        initialFile={initialFile}
-        onFileConsumed={() => setInitialFile(null)}
+        initialDrop={initialDrop}
+        onDropConsumed={() => setInitialDrop(null)}
       />
     );
   return (
     <Home
-      onOpenFile={(file) => {
-        setInitialFile(file);
+      onOpenFiles={(picked) => {
+        setInitialDrop(picked);
         navigate('/edit');
       }}
     />
@@ -59,3 +59,4 @@ function App() {
 }
 
 export default App;
+

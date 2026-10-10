@@ -111,7 +111,7 @@
   },
   "mce": {
     "dropFiles": "Arrastra archivos o carpetas aquí, o usa los botones.",
-    "dropImport": "Arrastra aquí un archivo o una configuración de mod para editarlo.",
+    "dropImport": "Arrastra aquí un archivo, un archivo ZIP o una configuración para editarlo.",
     "dropSource": "Arrastra un archivo o una carpeta aquí para usar su ruta.",
     "dropIcon": "Arrastra una imagen aquí para usarla como icono.",
     "dropHash": "Arrastra un archivo aquí para calcular su hash.",
@@ -153,9 +153,9 @@
     "removeFileConfirm": "¿Quitar {{path}} del ZIP? Las operaciones que lo utilizan necesitarán otro origen.",
     "duplicateFiles": "Ya existe un archivo con esa ruta. Elimínalo antes de reemplazarlo.",
     "configReserved": "Abre mod_config.json en Editar Mod; el editor lo escribe al exportar.",
-    "importHint": "Abre un ZIP de G3M, un ZIP de Deltamod o mod_config.json.",
+    "importHint": "Abre un ZIP de G3M o Deltamod, mod_config.json o cualquier archivo.",
     "invalidImport": "No se pudo abrir el archivo o la configuración del mod.",
-    "importConfig": "Seleccionar archivo o configuración",
+    "importConfig": "Seleccionar ZIP, configuración o archivo",
     "browseZip": "Explorar ZIP incluido",
     "chooseZip": "Elegir ZIP",
     "zipMember": "Origen dentro del ZIP",
@@ -164,3 +164,4 @@
     "invalidSavedPath": "Introduce la ruta completa del ZIP guardado, por ejemplo C:/Users/Name/Downloads/mod.zip."
   }
 }
+

@@ -6,7 +6,7 @@ import logoPng from '../assets/g3m-logo.png';
 import Icon from '../components/Icon';
 import './Home.css';
 
-export default function Home({ onOpenFile }) {
+export default function Home({ onOpenFiles }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [error, setError] = useState(''),
@@ -14,12 +14,7 @@ export default function Home({ onOpenFile }) {
   const drop = useFileDrop({
     onError: setError,
     onBusyChange: setReading,
-    onDrop: (picked) => {
-      const files = Object.values(picked.files);
-      if (files.length !== 1 || picked.directories.length)
-        throw new Error(t('mce.singleFile'));
-      onOpenFile(files[0]);
-    },
+    onDrop: onOpenFiles,
   });
 
   return (
@@ -73,3 +68,5 @@ export default function Home({ onOpenFile }) {
     </main>
   );
 }
+
+
