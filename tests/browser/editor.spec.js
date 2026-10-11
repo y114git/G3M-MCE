@@ -1298,7 +1298,7 @@ test('keeps tabs, buttons and width stable and restores tab scroll positions', a
         };
       });
     const initial = await dimensions();
-    await page.locator('#id').scrollIntoViewIfNeeded();
+    await page.locator('#game_version').scrollIntoViewIfNeeded();
     const scroll = await page
       .locator('.editor-content')
       .evaluate((element) => element.scrollTop);

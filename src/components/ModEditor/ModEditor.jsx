@@ -1129,6 +1129,13 @@ export default function ModEditor({
                     onChange={(value) => update('name', value)}
                   />
                   <Field
+                    id="id"
+                    label={t('mce.modId')}
+                    value={config.id}
+                    onChange={(value) => update('id', value)}
+                    hint={t('mce.idHint')}
+                  />
+                  <Field
                     id="authors"
                     label={t('ui.mod_editor_authors')}
                     value={authorsText}
@@ -1217,13 +1224,6 @@ export default function ModEditor({
                     ))}
                   </fieldset>
 
-                  <Field
-                    id="id"
-                    label={t('mce.modId')}
-                    value={config.id}
-                    onChange={(value) => update('id', value)}
-                    hint={t('mce.idHint')}
-                  />
                   <Field
                     id="version"
                     label={t('ui.overall_mod_version')}

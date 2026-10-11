@@ -43,7 +43,7 @@
 .editor-content {
   padding: 16px;
   margin-top: -2px;
-  height: clamp(580px, calc(100svh - 250px), 900px);
+  height: clamp(540px, calc(100svh - 300px), 820px);
   overflow-y: scroll;
   scrollbar-gutter: stable;
   scrollbar-width: thin;
@@ -497,3 +497,4 @@
   height: 90px;
   overflow-y: auto;
 }
+
