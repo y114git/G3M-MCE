@@ -370,6 +370,15 @@ test('shows validation errors and allows keyboard tabs on mobile without overflo
   });
 });
 
+test('shows the Pizza Tower tag only for Pizza Tower mods', async ({ page }) => {
+  await openEditor(page);
+  await expect(page.getByLabel('CYOP/AFOM', { exact: true })).toHaveCount(0);
+  await page.locator('#game').selectOption('pizzatower');
+  await expect(page.getByLabel('CYOP/AFOM', { exact: true })).toBeVisible();
+  await page.locator('#game').selectOption('deltarune');
+  await expect(page.getByLabel('CYOP/AFOM', { exact: true })).toHaveCount(0);
+});
+
 test('direct export saves a ZIP and explains the local-file handoff', async ({
   page,
 }) => {

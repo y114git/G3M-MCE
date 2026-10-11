@@ -1101,9 +1101,18 @@ export default function ModEditor({
                       value={
                         games.includes(config.game) ? config.game : '__custom__'
                       }
-                      onChange={(value) =>
-                        update('game', value === '__custom__' ? '' : value)
-                      }
+                      onChange={(value) => {
+                        const game = value === '__custom__' ? '' : value;
+                        setConfig((previous) => ({
+                          ...previous,
+                          game,
+                          tags:
+                            game === 'pizzatower'
+                              ? previous.tags
+                              : (previous.tags || []).filter((tag) => tag !== 'CYOP/AFOM'),
+                        }));
+                        changed();
+                      }}
                     >
                       {games.map((game) => (
                         <option key={game} value={game}>
@@ -1203,7 +1212,7 @@ export default function ModEditor({
                     className="tags"
                   >
                     <legend>{t('ui.mod_tags_label')}</legend>
-                    {MOD_ALLOWED_TAGS.map((tag) => (
+                    {MOD_ALLOWED_TAGS.filter((tag) => config.game === 'pizzatower' || tag !== 'CYOP/AFOM').map((tag) => (
                       <label key={tag}>
                         <input
                           type="checkbox"
@@ -1972,4 +1981,5 @@ export default function ModEditor({
     </main>
   );
 }
+
 
