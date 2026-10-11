@@ -396,6 +396,10 @@
   border-left: var(--g3m-border-width) solid var(--g3m-secondary);
   padding-left: 12px;
 }
+.editor-status.is-empty {
+  visibility: hidden;
+  border-left: 0;
+}
 .file-picker {
   display: none;
 }

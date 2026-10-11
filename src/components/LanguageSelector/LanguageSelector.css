@@ -11,3 +11,21 @@
   border-radius: 7px;
   background: var(--g3m-elements);
 }
+
+.language-selector::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid var(--g3m-text);
+  border-bottom: 2px solid var(--g3m-text);
+  transform: translateY(-65%) rotate(45deg);
+  pointer-events: none;
+}
+
+.language-select {
+  appearance: none;
+  padding-right: 40px;
+}

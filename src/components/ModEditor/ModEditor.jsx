@@ -1842,11 +1842,12 @@ export default function ModEditor({
             </fieldset>
           </FieldErrors.Provider>
         </div>
-        {status && (
-          <p className="editor-status" role="status">
-            {typeof status === 'string' ? status : t(status.key)}
-          </p>
-        )}
+        <p
+          className={"editor-status" + (status ? "" : " is-empty")}
+          role="status"
+        >
+          {status ? (typeof status === "string" ? status : t(status.key)) : '\u00a0'}
+        </p>
         <footer className="g3m-editor__footer-actions">
           <button onClick={() => navigate('/')} disabled={busy}>
             <Icon name="cross_icon" />
