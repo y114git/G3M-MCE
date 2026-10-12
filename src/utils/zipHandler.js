@@ -322,7 +322,7 @@ export async function validatePackage(config, assets, thorough = true) {
     const directory = value.endsWith('/') && !virtual;
     if (
       directory
-        ? !(assets.directories || []).includes(path + '/') &&
+        ? !(assets.directories || []).some((directory) => directory.startsWith(path + '/')) &&
           !Object.keys(assets.files).some((key) => key.startsWith(path + '/'))
         : !Object.hasOwn(assets.files, path)
     )

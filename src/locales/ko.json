@@ -110,6 +110,9 @@
     "language": "Language"
   },
   "mce": {
+    "searchFiles": "파일 및 폴더 검색",
+    "useSource": "원본으로 사용",
+    "noMatchingFiles": "파일 또는 폴더를 찾을 수 없습니다.",
     "dropFiles": "파일이나 폴더를 여기로 끌어놓거나 버튼을 사용하세요.",
     "dropImport": "모드 압축 파일, 설정 또는 파일을 여기로 끌어놓아 편집하세요.",
     "dropSource": "파일이나 폴더를 여기로 끌어놓아 경로를 지정하세요.",
@@ -135,7 +138,7 @@
     "moveUp": "위로 이동",
     "moveDown": "아래로 이동",
     "bundledFiles": "포함된 파일",
-    "bundleHint": "모드의 파일을 추가하세요. 스크립트 종속 파일처럼 작업이 없는 파일도 ZIP에 포함됩니다.",
+    "bundleHint": "파일 또는 폴더를 클릭하면 선택한 작업의 원본으로 설정됩니다. 선택한 작업이 없으면 새 작업이 추가됩니다. 작업이 없는 파일도 ZIP에 남습니다.",
     "targetHint": "DELTARUNE 챕터에는 ${game_path}/chapter1_windows/…를 사용하세요. macOS에서는 G3M이 경로를 조정합니다.",
     "path_mod_path": "설치된 모드의 폴더.",
     "path_game_path": "게임 설치 폴더.",

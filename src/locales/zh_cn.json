@@ -110,6 +110,9 @@
     "language": "语言"
   },
   "mce": {
+    "searchFiles": "搜索文件和文件夹",
+    "useSource": "用作源路径",
+    "noMatchingFiles": "未找到文件或文件夹。",
     "dropFiles": "将文件或文件夹拖到这里，或使用按钮。",
     "dropImport": "将模组压缩包、配置或文件拖到这里进行编辑。",
     "dropSource": "将文件或文件夹拖到这里以指定路径。",
@@ -135,7 +138,7 @@
     "moveUp": "上移",
     "moveDown": "下移",
     "bundledFiles": "打包文件",
-    "bundleHint": "添加模组文件。未设置操作的文件也会打包到 ZIP，例如脚本依赖文件。",
+    "bundleHint": "点击文件或文件夹可设为所选操作的源路径；未选择操作时会添加新操作。没有操作的文件仍保留在 ZIP 中。",
     "targetHint": "DELTARUNE 章节路径示例：${game_path}/chapter1_windows/…；G3M 会在 macOS 上调整章节路径。",
     "path_mod_path": "已安装模组的文件夹。",
     "path_game_path": "游戏安装文件夹。",

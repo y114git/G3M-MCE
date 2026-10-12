@@ -110,6 +110,9 @@
     "language": "Language"
   },
   "mce": {
+    "searchFiles": "Search files and folders",
+    "useSource": "Use as source",
+    "noMatchingFiles": "No files or folders found.",
     "dropFiles": "Drop files or folders here, or use the buttons.",
     "dropImport": "Drop a mod archive, config, or file here to edit it.",
     "dropSource": "Drop a file or folder here to use its path.",
@@ -135,7 +138,7 @@
     "moveUp": "Move up",
     "moveDown": "Move down",
     "bundledFiles": "Bundled files",
-    "bundleHint": "Add the files used by your mod. Files without an operation remain in the ZIP, for example script dependencies.",
+    "bundleHint": "Click a file or folder to set the selected operation’s source, or add an operation if none is selected. Files without operations stay in the ZIP.",
     "targetHint": "For a DELTARUNE chapter, use ${game_path}/chapter1_windows/…; G3M adapts chapter paths on macOS.",
     "path_mod_path": "The installed mod folder.",
     "path_game_path": "The game installation folder.",

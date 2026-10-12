@@ -9,6 +9,7 @@ Create, edit and package G3M mods in your browser. Use the exported ZIP with G3M
 - Calculate hashes for bundled files, folders and ZIP members, or select an original game file to calculate its target hash.
 - Open existing G3M ZIPs or `mod_config.json`. Older G3M configs and Deltamod ZIPs with JSON or TOML metadata are converted to the current format.
 - Keep script dependencies and other bundled files when editing a mod.
+- Browse bundled files as a searchable folder tree beside the operations. Click a file or folder to set the selected operation’s source; with no operation selected, a new one is added. Use the bundled-file picker beside source, icon and custom-path fields without dragging across the page.
 - Drop a ZIP or config onto the start page to open it. Drag files and folders into the editor, or onto source, icon and hash fields. Bundled files can also be dragged onto fields to reuse them.
 - Save a ZIP or send the saved file to G3M through `g3m://`. Open any ZIP or file from Edit Mod to start a mod with its contents already bundled; drop multiple files or folders to bundle them at once.
 - Available in English, Russian, Spanish, Japanese, Korean, Simplified Chinese and Traditional Chinese.

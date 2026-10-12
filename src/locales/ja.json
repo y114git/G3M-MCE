@@ -110,6 +110,9 @@
     "language": "Language"
   },
   "mce": {
+    "searchFiles": "ファイルとフォルダーを検索",
+    "useSource": "ソースとして使用",
+    "noMatchingFiles": "ファイルやフォルダーが見つかりません。",
     "dropFiles": "ファイルやフォルダーをここにドラッグするか、ボタンを使ってください。",
     "dropImport": "アーカイブ、設定、またはファイルをここにドラッグして編集できます。",
     "dropSource": "ファイルやフォルダーをここにドラッグすると、そのパスを指定できます。",
@@ -135,7 +138,7 @@
     "moveUp": "上に移動",
     "moveDown": "下に移動",
     "bundledFiles": "同梱ファイル",
-    "bundleHint": "MODのファイルを追加します。スクリプトの依存ファイルなど、操作のないファイルもZIPに含まれます。",
+    "bundleHint": "ファイルやフォルダーをクリックして、選択中の操作のソースに設定します。操作が選択されていなければ新しく追加します。操作のないファイルもZIPに残ります。",
     "targetHint": "DELTARUNEの章には${game_path}/chapter1_windows/…を使います。macOSではG3Mが章のパスを調整します。",
     "path_mod_path": "インストール済みMODのフォルダー。",
     "path_game_path": "ゲームのインストールフォルダー。",

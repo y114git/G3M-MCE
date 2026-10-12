@@ -36,6 +36,7 @@ import {
 } from '../../utils/zipHandler';
 import { buildG3MLink } from '../../utils/g3mProtocol';
 import Icon from '../Icon';
+import PackageTree from './PackageTree';
 import {
   assetsFromFiles,
   packageRoot,
@@ -418,6 +419,11 @@ export default function ModEditor({
     [savedPath, setSavedPath] = useState(''),
     [handoffError, setHandoffError] = useState('');
   const [preview, setPreview] = useState('');
+  const [packagePicker, setPackagePicker] = useState(null);
+  const packageDialog = useRef();
+  useEffect(() => {
+    if (packagePicker) packageDialog.current?.showModal();
+  }, [packagePicker]);
   const [zipMembers, setZipMembers] = useState([]);
   const [collapsedGroups, setCollapsedGroups] = useState(new Set());
   const toggleGroup = (name, open) =>
@@ -490,7 +496,9 @@ export default function ModEditor({
       file = relative && assets.files[relative];
     let url = '';
     if (file)
-      url = URL.createObjectURL(file instanceof Blob ? file : new Blob([file]));
+      url = URL.createObjectURL(file instanceof Blob ? file : new Blob([file], {
+        type: /\.svg$/i.test(relative) ? 'image/svg+xml' : '',
+      }));
     setPreview(
       url || (/^https?:\/\//.test(config.icon || '') ? config.icon : '')
     );
@@ -547,7 +555,7 @@ export default function ModEditor({
       return false;
     }
   };
-  const addEntry = (isGroup) => {
+  const addEntry = (isGroup, source = '') => {
     const files = structuredClone(config.files),
       parent = group ? selected : [];
     const list = operationList(files, parent);
@@ -561,7 +569,7 @@ export default function ModEditor({
     list.push(
       isGroup
         ? { [name]: [] }
-        : { source: '', target: '${game_path}/data.win', type: 'patch' }
+        : { source, target: source.endsWith('/') ? '${game_path}/' : '${game_path}/data.win', type: source.endsWith('/') ? 'hard-extract' : 'patch' }
     );
     update('files', files);
     setSelected([...parent, list.length - 1]);
@@ -625,10 +633,26 @@ export default function ModEditor({
   const packagePath = (path) => {
     if (
       !Object.hasOwn(assets.files, path) &&
-      !assets.directories.includes(path)
+      !assets.directories.includes(path) &&
+      !(path.endsWith('/') && [...Object.keys(assets.files), ...assets.directories].some((file) => file.startsWith(path)))
     )
       throw new Error(t('mce.singleSource'));
     return '${mod_path}/' + path;
+  };
+  const choosePackagePath = (path, kind = 'source') => {
+    try {
+      const value = packagePath(path);
+      if (kind === 'icon') {
+        checkImage(assets.files[path] || {}, path);
+        update('icon', value);
+      } else if (kind.startsWith('alias-')) aliasChange(Number(kind.slice(6)), 'path', value);
+      else if (!entry || group) addEntry(false, value);
+      else editEntry((previous) => ({
+        ...previous, source: value,
+        ...(previous.source_hash !== undefined ? { source_hash: '' } : {}),
+      }));
+      if (packagePicker) packageDialog.current.close();
+    } catch (error) { setStatus(error.message); }
   };
   const hashFile = async (file, key) => {
     const bytes = await fileBytes(file),
@@ -1090,7 +1114,22 @@ export default function ModEditor({
             </div>
           )}
           <FieldErrors.Provider value={{ errors: fieldErrors, onTouched: (id) => setTouched((previous) => new Set(previous).add(id)) }}>
-            <fieldset className="editor-fields" disabled={busy}>
+            <fieldset className={`editor-fields ${tab === 'files' ? 'files-layout' : ''}`} disabled={busy}>
+              <section hidden={tab !== 'files'} id="package-files" tabIndex={-1}
+                className={`package-files ${fieldErrors['package-files'] ? 'is-invalid' : ''}`}>
+                <h2>{t('mce.bundledFiles')}</h2>
+                <p>{t('mce.bundleHint')} {t('mce.dropFiles')}</p>
+                <div className="button-row">
+                  <button onClick={() => fileInput.current.click()} disabled={busy}>
+                    <Icon name="add_icon" />{t('ui.add_files')}
+                  </button>
+                  <button onClick={() => folderInput.current.click()} disabled={busy}>
+                    <Icon name="folder_icon" />{t('editor.addFolder')}
+                  </button>
+                </div>
+                <PackageTree assets={assets} onChoose={choosePackagePath} onRemove={removeFile} disabled={busy}
+                  selectedPath={localRelativePath(entry?.source, canonical.placeholders) + (entry?.source?.endsWith('/') ? '/' : '')} />
+              </section>
               {tab === 'metadata' && (
                 <div className="metadata-grid">
                   <div className="game-row">
@@ -1181,6 +1220,11 @@ export default function ModEditor({
                       list="package-sources"
                       hint={t('editor.iconHint')}
                       adornment={
+                        <>
+                        <button className="icon-button" aria-label={`${t('files.icon_label')}: ${t('mce.bundledFiles')}`}
+                          title={t('mce.bundledFiles')} onClick={() => setPackagePicker('icon')}>
+                          <Icon name="edit_icon" />
+                        </button>
                         <button
                           className="icon-button"
                           aria-label={t('ui.select_icon_file')}
@@ -1189,11 +1233,14 @@ export default function ModEditor({
                         >
                           <Icon name="folder_icon" />
                         </button>
+                        </>
                       }
                     />
                     <div className="icon-preview">
                       <img
                         src={preview || defaultIcon}
+                        width="64"
+                        height="64"
                         alt={t('ui.icon_preview')}
                         referrerPolicy="no-referrer"
                         onError={(event) => {
@@ -1356,6 +1403,11 @@ export default function ModEditor({
                                   list="package-sources"
                                   onChange={(value) => setPath('source', value)}
                                   adornment={
+                                    <>
+                                    <button className="icon-button" aria-label={`${t('ui.mod_editor_source')}: ${t('mce.bundledFiles')}`}
+                                      title={t('mce.bundledFiles')} onClick={() => setPackagePicker('source')}>
+                                      <Icon name="edit_icon" />
+                                    </button>
                                     <button
                                       className="icon-button"
                                       title={t('ui.mod_editor_source')}
@@ -1366,6 +1418,7 @@ export default function ModEditor({
                                     >
                                       <Icon name="folder_icon" />
                                     </button>
+                                    </>
                                   }
                                 />
                                 {entry.source_hash !== undefined && (
@@ -1640,6 +1693,11 @@ export default function ModEditor({
                           onChange={(value) =>
                             aliasChange(index, 'path', value)
                           }
+                          adornment={<button className="icon-button" disabled={index < 0}
+                            aria-label={`${t('ui.mod_editor_placeholder_path')}: ${t('mce.bundledFiles')}`}
+                            title={t('mce.bundledFiles')} onClick={() => setPackagePicker(`alias-${index}`)}>
+                            <Icon name="folder_icon" />
+                          </button>}
                         />
                       </>
                     )}
@@ -1797,60 +1855,18 @@ export default function ModEditor({
                   </details>
                 </section>
               )}
-              {/* Keep the dragged file mounted while hovering another tab. */}
-              <section
-                hidden={tab !== 'files'}
-                id="package-files"
-                tabIndex={-1}
-                className={`package-files ${fieldErrors['package-files'] ? 'is-invalid' : ''}`}
-              >
-                <h2>{t('mce.bundledFiles')}</h2>
-                <p>
-                  {t('mce.bundleHint')} {t('mce.dropFiles')}
-                </p>
-                <div className="button-row">
-                  <button
-                    onClick={() => fileInput.current.click()}
-                    disabled={busy}
-                  >
-                    <Icon name="add_icon" />
-                    {t('ui.add_files')}
-                  </button>
-                  <button
-                    onClick={() => folderInput.current.click()}
-                    disabled={busy}
-                  >
-                    <Icon name="folder_icon" />
-                    {t('editor.addFolder')}
-                  </button>
-                </div>
-                <ul>
-                  {Object.keys(assets.files).map((path) => (
-                    <li
-                      key={path}
-                      draggable
-                      title={t('mce.dragFile')}
-                      onDragStart={(event) => {
-                        event.stopPropagation();
-                        event.dataTransfer.effectAllowed = 'copy';
-                        event.dataTransfer.setData(PACKAGE_PATH_TYPE, path);
-                      }}
-                    >
-                      <code>{path}</code>
-                      <button
-                        aria-label={`${t('buttons.delete')}: ${path}`}
-                        onClick={() => removeFile(path)}
-                        disabled={busy}
-                      >
-                        {t('buttons.delete')}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </section>
             </fieldset>
           </FieldErrors.Provider>
         </div>
+        {packagePicker && <dialog ref={packageDialog} className="package-picker" onClose={() => setPackagePicker(null)} aria-labelledby="package-picker-title">
+          <h2 id="package-picker-title">{t('mce.bundledFiles')}</h2>
+          <p>{t('mce.chooseMember')}</p>
+          <PackageTree key={packagePicker} assets={packagePicker === 'icon' ? {
+            directories: [], files: Object.fromEntries(Object.entries(assets.files).filter(([path]) => /\.(png|jpe?g|gif|bmp|ico|webp|svg|avif|tiff?)$/i.test(path))),
+          } : assets} folders={packagePicker !== 'icon'} label={packagePicker === 'icon' ? t('ui.select_icon_file') : t('mce.useSource')}
+            onChoose={(path) => choosePackagePath(path, packagePicker)} disabled={busy} />
+          <div className="button-row"><button onClick={() => packageDialog.current.close()}>{t('ui.cancel_button')}</button></div>
+        </dialog>}
         <p
           className={"editor-status" + (status ? "" : " is-empty")}
           role="status"

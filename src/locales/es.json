@@ -110,6 +110,9 @@
     "language": "Idioma"
   },
   "mce": {
+    "searchFiles": "Buscar archivos y carpetas",
+    "useSource": "Usar como origen",
+    "noMatchingFiles": "No se encontraron archivos ni carpetas.",
     "dropFiles": "Arrastra archivos o carpetas aquí, o usa los botones.",
     "dropImport": "Arrastra aquí un archivo, un archivo ZIP o una configuración para editarlo.",
     "dropSource": "Arrastra un archivo o una carpeta aquí para usar su ruta.",
@@ -135,7 +138,7 @@
     "moveUp": "Subir",
     "moveDown": "Bajar",
     "bundledFiles": "Archivos incluidos",
-    "bundleHint": "Añade los archivos del mod. Los archivos sin operación también se incluyen en el ZIP, por ejemplo las dependencias de scripts.",
+    "bundleHint": "Haz clic en un archivo o carpeta para cambiar el origen de la operación seleccionada, o añadir una si no hay ninguna seleccionada. Los archivos sin operaciones permanecen en el ZIP.",
     "targetHint": "Para un capítulo de DELTARUNE: ${game_path}/chapter1_windows/…; G3M adapta las rutas en macOS.",
     "path_mod_path": "Carpeta del mod instalado.",
     "path_game_path": "Carpeta de instalación del juego.",

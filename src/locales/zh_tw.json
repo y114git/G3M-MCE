@@ -110,6 +110,9 @@
     "language": "語言"
   },
   "mce": {
+    "searchFiles": "搜尋檔案與資料夾",
+    "useSource": "用作來源路徑",
+    "noMatchingFiles": "找不到檔案或資料夾。",
     "dropFiles": "將檔案或資料夾拖到這裡，或使用按鈕。",
     "dropImport": "將模組壓縮檔、設定或檔案拖到這裡進行編輯。",
     "dropSource": "將檔案或資料夾拖到這裡以指定路徑。",
@@ -135,7 +138,7 @@
     "moveUp": "上移",
     "moveDown": "下移",
     "bundledFiles": "打包檔案",
-    "bundleHint": "新增模組檔案。未設定操作的檔案也會打包至 ZIP，例如指令碼相依檔案。",
+    "bundleHint": "點擊檔案或資料夾可設為所選操作的來源路徑；未選取操作時會新增操作。沒有操作的檔案仍保留在 ZIP 中。",
     "targetHint": "DELTARUNE 章節路徑範例：${game_path}/chapter1_windows/…；G3M 會在 macOS 上調整章節路徑。",
     "path_mod_path": "已安裝模組的資料夾。",
     "path_game_path": "遊戲安裝資料夾。",

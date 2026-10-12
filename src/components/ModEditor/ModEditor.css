@@ -135,11 +135,12 @@
   border-radius: var(--g3m-radius);
   display: grid;
   place-items: center;
+  overflow: hidden;
 }
 .icon-preview img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
 }
 .icon-button {
   padding: 8px;
@@ -275,26 +276,117 @@
   margin-right: auto;
 }
 .package-files {
-  margin-top: 16px;
-  border-top: var(--g3m-border-width) solid var(--g3m-border);
-  padding-top: 16px;
+  min-width: 0;
+  padding: 12px;
+  border: var(--g3m-border-width) solid var(--g3m-border);
+  border-radius: var(--g3m-radius);
+  align-self: start;
 }
-.package-files ul {
+.package-tree ul {
   list-style: none;
   padding: 0;
-  max-height: 420px;
-  overflow: auto;
+  margin: 0;
 }
-.package-files li {
+.package-tree ul ul {
+  padding-left: 16px;
+}
+.package-tree-row {
   display: flex;
-  gap: 12px;
+  gap: 4px;
   align-items: center;
-  justify-content: space-between;
-  margin-top: 8px;
 }
-.package-files code {
-  overflow-wrap: anywhere;
+.package-path {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
   min-width: 0;
+  justify-content: flex-start;
+  text-align: left;
+  border-color: transparent;
+  padding: 6px;
+}
+.package-path span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.package-path[aria-pressed='true'] {
+  background: var(--g3m-hover);
+  border-color: var(--g3m-border);
+}
+.package-tree summary {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.package-tree summary::before {
+  content: '▸';
+  padding: 4px;
+}
+.package-tree details[open] > summary::before {
+  content: '▾';
+}
+.package-tree summary .package-tree-row {
+  flex: 1;
+  min-width: 0;
+}
+.package-tree-scroll {
+  max-height: 360px;
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--g3m-border) transparent;
+  overscroll-behavior: contain;
+}
+.package-tree-row {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 44px;
+}
+.package-tree > input {
+  width: 100%;
+  margin: 10px 0;
+}
+.editor-content fieldset.files-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(0, 3fr);
+  gap: 8px;
+  align-items: start;
+}
+.files-layout > .editor-hint {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+.files-layout > .operation-actions {
+  grid-column: 2;
+  grid-row: 2;
+}
+.files-layout > .file-workspace {
+  grid-column: 2;
+  grid-row: 3;
+}
+.files-layout > .package-files {
+  position: sticky;
+  top: 0;
+  grid-column: 1;
+  grid-row: 2 / 4;
+}
+.editor dialog.package-picker {
+  width: min(560px, calc(100vw - 32px));
+}
+.package-picker .package-tree-scroll {
+  max-height: min(420px, 50vh);
+}
+@media (max-width: 1000px) {
+  .editor-content fieldset.files-layout {
+    display: block;
+  }
+  .files-layout > .package-files {
+    position: static;
+    margin-bottom: 12px;
+  }
+  .files-layout .package-tree-scroll {
+    max-height: 180px;
+  }
 }
 .compatibility-grid {
   display: grid;

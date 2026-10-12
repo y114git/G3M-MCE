@@ -93,6 +93,68 @@ async function addRelation(page, section, id, mode = '') {
   await pane.getByLabel('Order', { exact: true }).selectOption(mode);
 }
 
+test('chooses nested files, inferred and empty folders without dragging and fills the icon preview', async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  const zip = new JSZip();
+  zip.file('mod_config.json', JSON.stringify({ ...config(), files: [] }));
+  zip.file('assets/images/wide.svg', '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50"><rect width="200" height="50" fill="red"/></svg>', { createFolders: false });
+  zip.file('assets/notes/readme.txt', 'Nested notes', { createFolders: false });
+  zip.file('assets/other/readme.txt', 'Other notes', { createFolders: false });
+  zip.folder('empty');
+  for (let index = 0; index < 150; index++) zip.file(`assets/payload/file${index}.bin`, 'Payload', { createFolders: false });
+  await page.goto('./#/edit');
+  await page.getByLabel('Select archive, config, or file').setInputFiles({ name: 'nested.zip', mimeType: 'application/zip', buffer: await zip.generateAsync({ type: 'nodebuffer' }) });
+  await page.getByRole('tab', { name: 'Files', exact: true }).click();
+  const bundle = page.locator('#package-files');
+  const panelScroll = await page.locator('.editor-content').evaluate((element) => element.scrollTop);
+  await bundle.getByRole('button', { name: 'Use as source: assets/', exact: true }).click();
+  await expect(page.locator('#source')).toHaveValue('${mod_path}/assets/');
+  await expect(page.locator('#operation-type')).toHaveValue('hard-extract');
+  await page.getByRole('button', { name: 'Source: Bundled files', exact: true }).click();
+  const picker = page.getByRole('dialog', { name: 'Bundled files', exact: true });
+  await picker.getByRole('searchbox').fill('notes/readme');
+  await picker.getByRole('button', { name: 'Use as source: assets/notes/readme.txt', exact: true }).focus();
+  await page.keyboard.press('Enter');
+  await expect(picker).not.toBeVisible();
+  await expect(page.locator('#source')).toHaveValue('${mod_path}/assets/notes/readme.txt');
+  await expect(page.locator('#operation-type')).toHaveValue('hard-extract');
+  await expect(page.locator('.editor-content')).toHaveJSProperty('scrollTop', panelScroll);
+  await bundle.getByRole('button', { name: 'Use as source: empty/', exact: true }).click();
+  await expect(page.locator('#source')).toHaveValue('${mod_path}/empty/');
+  await page.getByRole('tab', { name: 'Metadata', exact: true }).click();
+  await page.getByRole('button', { name: 'Icon: Bundled files', exact: true }).click();
+  await picker.locator('summary').filter({ hasText: 'assets' }).click();
+  await picker.locator('summary').filter({ hasText: 'images' }).click();
+  await picker.getByRole('button', { name: /wide.svg/ }).click();
+  await expect(page.locator('.icon-preview img')).toHaveCSS('object-fit', 'cover');
+  await expect(page.locator('.icon-preview img')).toHaveJSProperty('naturalWidth', 200);
+  await expect(page.locator('.icon-preview')).toHaveCSS('overflow', 'hidden');
+  await page.getByRole('tab', { name: 'Placeholders', exact: true }).click();
+  await page.getByRole('button', { name: 'Add', exact: true }).click();
+  await page.locator('#alias-0').fill('notes');
+  await page.locator('#alias-path-0').locator('..').getByRole('button').click();
+  await picker.getByRole('searchbox').fill('assets/notes/');
+  await picker.getByRole('button', { name: 'Use as source: assets/notes/', exact: true }).click();
+  await expect(page.locator('#alias-path-0')).toHaveValue('${mod_path}/assets/notes/');
+  const event = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Save ZIP', exact: true }).click();
+  const saved = await JSZip.loadAsync(await readFile(await (await event).path()));
+  expect(await saved.file('assets/notes/readme.txt').async('string')).toBe('Nested notes');
+  expect(saved.files['empty/'].dir).toBe(true);
+  expect(saved.file('assets/payload/file149.bin')).not.toBeNull();
+  expect(await saved.file('assets/other/readme.txt').async('string')).toBe('Other notes');
+  for (const width of [800, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.getByRole('tab', { name: 'Files', exact: true }).click();
+    await page.getByRole('button', { name: 'Source: Bundled files', exact: true }).click();
+    await expect(picker).toBeVisible();
+    await assertAppearance(page);
+    await page.keyboard.press('Escape');
+    await expect(picker).not.toBeVisible();
+    await expect(page.getByRole('button', { name: 'Source: Bundled files', exact: true })).toBeFocused();
+  }
+});
+
 test('keeps a folder used by an operation after its last bundled file is removed', async ({
   page,
 }) => {
@@ -117,6 +179,7 @@ test('keeps a folder used by an operation after its last bundled file is removed
   });
   await page.getByRole('tab', { name: 'Files', exact: true }).click();
   page.once('dialog', (dialog) => dialog.accept());
+  await page.locator('#package-files summary').click({ position: { x: 5, y: 16 } });
   await page
     .getByRole('button', { name: 'Remove: folder/file.txt', exact: true })
     .click();

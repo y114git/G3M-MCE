@@ -33,6 +33,15 @@ const archive = async (manifest, files = {}, root = '') => {
   return zip.generateAsync({ type: 'uint8array' });
 };
 describe('G3M ZIP import and export', () => {
+  it('validates and exports an inferred parent of an empty bundled folder', async () => {
+    const assets = { files: {}, directories: ['parent/empty/'] };
+    const manifest = { ...config(), files: [{ source: '${mod_path}/parent/', target: '${game_path}/parent/', type: 'extract' }] };
+    await expect(validatePackage(manifest, assets)).resolves.toBeUndefined();
+    const hash = await hashPackagePath('${mod_path}/parent/', assets);
+    expect(hash).toMatch(/^sha256:[a-f0-9]{64}$/);
+    const imported = await importZipArchive(await exportModArchive({ config: manifest, assets }));
+    expect(imported.assets.directories).toContain('parent/empty/');
+  });
   it.each(['meta.json', 'meta.toml', '_deltamodInfo.json'])(
     'blocks root %s that would make G3M misidentify the exported package',
     async (name) => {
