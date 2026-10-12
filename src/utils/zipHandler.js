@@ -1,3 +1,4 @@
+import JSZip from 'jszip';
 import {
   buildModConfigData,
   createEmptyModConfig,
@@ -134,7 +135,6 @@ async function loadPayloadZip(input) {
   if (bytes.byteLength > MAX_PACKAGE_BYTES)
     throw new Error('Archive exceeds the web editor limit of 1 GiB.');
   const { count } = inspectZip(bytes);
-  const { default: JSZip } = await import('jszip');
   const zip = await JSZip.loadAsync(bytes, {
     checkCRC32: true,
     createFolders: false,
@@ -243,7 +243,6 @@ export async function importConfigFile(file) {
 export async function exportModArchive({ config, assets }) {
   const canonical = buildModConfigData(config);
   await validatePackage(canonical, assets);
-  const { default: JSZip } = await import('jszip');
   const zip = new JSZip();
   for (const directory of assets.directories || []) zip.folder(directory);
   for (const [path, file] of Object.entries(assets.files || {}))

@@ -7,6 +7,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
+    rolldownOptions: { output: { codeSplitting: false } },
   },
   test: { include: ['src/**/*.test.js'] },
 });
