@@ -252,6 +252,10 @@ export function validateModConfig(config) {
         'Use 1–64 lowercase letters, digits, underscores or hyphens, starting with a letter; self is reserved.'
       );
   for (const key of ['name', 'version']) display(config[key], key);
+  if (typeof config.name === 'string' && (
+    /[<>:"/\\|?*]/u.test(config.name) || /[ .]$/u.test(config.name) ||
+    /^(con|prn|aux|nul|conin\$|conout\$|com[1-9¹²³]|lpt[1-9¹²³])(?:\.|$)/i.test(config.name)
+  )) issue('name', 'Use a name valid on Windows, macOS and Linux: no reserved device names, < > : " / \\ | ? *, or trailing dots or spaces.');
   if (!Array.isArray(config.authors) || config.authors.length > 64)
     issue('authors', 'Use an array with at most 64 authors.');
   else

@@ -18,6 +18,8 @@ Edit Mod accepts G3M and Deltamod archives, ordinary ZIP files, individual files
 
 To export to G3M, save the ZIP, then enter its full local path. G3M must be installed and registered to open `g3m://` links. Browsers cannot supply the downloaded file’s full path automatically.
 
+ZIP filenames use the mod name and version, with spaces replaced by underscores. Mod names must be valid on Windows, macOS and Linux; exported filenames are sanitized and shortened when needed. Reorder operations by dragging: drop between rows to change their order, onto the middle of a group to move inside it, or onto empty space in Processing order to move to the top level.
+
 The web editor creates `mod_config.json 2.0.0` archives. It packages patches and scripts; G3M applies them. Test the mod in G3M before sharing it. Archives are limited to 1 GiB unpacked in total and 512 MiB per file. Hashes for files inside archives other than ZIP are checked by G3M.
 
 ## Development

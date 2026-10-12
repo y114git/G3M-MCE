@@ -295,7 +295,10 @@ test('creates a mod, edits ordered operations and exports the actual files', asy
   page.on('pageerror', (error) => errors.push(error.message));
   await openEditor(page);
   await page.getByLabel('Mod ID', { exact: true }).fill('browser_mod');
+  await page.getByLabel('Mod name:', { exact: true }).fill('Invalid:mod');
+  await expect(page.getByLabel('Mod name:', { exact: true })).toHaveAttribute('aria-invalid', 'true');
   await page.getByLabel('Mod name:', { exact: true }).fill('Browser Mod');
+  await expect(page.getByLabel('Mod name:', { exact: true })).not.toHaveAttribute('aria-invalid', 'true');
   await page.getByLabel('Mod authors:').fill('One\nTwo');
   await page.getByRole('tab', { name: 'Files', exact: true }).click();
   await page
@@ -324,6 +327,7 @@ test('creates a mod, edits ordered operations and exports the actual files', asy
   const downloadEvent = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Save ZIP', exact: true }).click();
   const download = await downloadEvent;
+  expect(download.suggestedFilename()).toBe('Browser_Mod-1.0.0.zip');
   const output = testInfo.outputPath(download.suggestedFilename());
   await download.saveAs(output);
   const zip = await JSZip.loadAsync(await readFile(output));
@@ -806,9 +810,10 @@ test('keeps native tabs, icons and 2px outlines across languages and viewport si
   }
 });
 
-test('keeps a renamed group selected while moving it and preserves its contents', async ({
+test('reorders renamed groups and moves operations between groups and root by dragging', async ({
   page,
 }) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
   await page.goto('./#/edit');
   const manifest = {
     ...config(),
@@ -852,20 +857,22 @@ test('keeps a renamed group selected while moving it and preserves its contents'
     .getByRole('button', { name: 'First', exact: true })
     .click();
   await page.getByLabel('Group name:').fill('Renamed');
-  await page.getByRole('button', { name: 'Move down', exact: true }).click();
-  await expect(page.getByLabel('Group name:')).toHaveValue('Renamed');
-  await expect(
-    page
-      .locator('.operations')
-      .getByRole('button', { name: 'Renamed', exact: true })
-  ).toHaveAttribute('aria-pressed', 'true');
-  await page.getByRole('button', { name: 'Move up', exact: true }).click();
-  await expect(page.getByLabel('Group name:')).toHaveValue('Renamed');
-  await expect(
-    page
-      .locator('.operations')
-      .getByRole('button', { name: 'Renamed', exact: true })
-  ).toHaveAttribute('aria-pressed', 'true');
+  await page.locator('.operations .pane-title').click();
+  const processing = page.locator('.operations');
+  const renamed = processing.getByRole('button', { name: 'Renamed', exact: true });
+  const second = processing.getByRole('button', { name: 'Second', exact: true });
+  const box = await processing.boundingBox();
+  await renamed.dragTo(processing, { sourcePosition: { x: 30, y: 10 }, targetPosition: { x: 10, y: box.height - 12 } });
+  await expect(processing.locator('.tree-group')).toHaveText(['Second', 'Renamed']);
+  await renamed.dragTo(second, { targetPosition: { x: 10, y: 2 } });
+  await expect(processing.locator('.tree-group')).toHaveText(['Renamed', 'Second']);
+  const leaf = processing.getByRole('button', { name: '1 ${mod_path}/readme.txt', exact: true });
+  await leaf.dragTo(second);
+  await leaf.dragTo(processing, { targetPosition: { x: 10, y: box.height - 12 } });
+  await leaf.dragTo(renamed);
+  await expect(page.locator('#move-to-group')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Move up', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Move down', exact: true })).toHaveCount(0);
   const event = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Save ZIP', exact: true }).click();
   const saved = await JSZip.loadAsync(

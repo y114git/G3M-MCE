@@ -14,6 +14,20 @@ export const MAX_PACKAGE_BYTES = 1024 * 1024 * 1024;
 export function emptyAssets() {
   return { files: Object.create(null), directories: [] };
 }
+export function archiveFilename(name, version) {
+  const sanitize = (value, limit) => {
+    let result = '';
+    for (const character of String(value || '').normalize('NFC').replace(/[<>:"/\\|?*\p{Cc}\p{Cf}\p{Cs}]/gu, '_').trim()) {
+      if (new TextEncoder().encode(result + character).length > limit) break;
+      result += character;
+    }
+    return result.replace(/[ .]+$/u, '').replace(/\s+/gu, '_') || 'mod';
+  };
+  const safeVersion = sanitize(version, 64);
+  const filename = `${sanitize(name, 180 - new TextEncoder().encode(safeVersion).length)}-${safeVersion}.zip`;
+  try { return safePackagePath(filename); }
+  catch { return safePackagePath('_' + filename); }
+}
 export function safePackagePath(path, directory = false) {
   if (
     typeof path !== 'string' ||

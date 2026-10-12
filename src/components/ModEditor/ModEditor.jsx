@@ -27,6 +27,7 @@ import {
 } from '../../data/operations';
 import {
   downloadZip,
+  archiveFilename,
   emptyAssets,
   exportModArchive,
   fileBytes,
@@ -199,7 +200,11 @@ function OperationTree({
             const source = JSON.parse(
               event.dataTransfer.getData('application/g3m-operation')
             );
-            move(source, group ? path : parent, group ? Infinity : index);
+            const box = event.currentTarget.getBoundingClientRect();
+            const inside = group && event.clientY > box.top + box.height / 4 && event.clientY < box.bottom - box.height / 4;
+            let insertion = index + (event.clientY > box.top + box.height / 2 ? 1 : 0);
+            if (samePath(source.slice(0, -1), parent) && source.at(-1) < insertion) insertion--;
+            move(source, inside ? path : parent, inside ? Infinity : insertion);
           } catch {
             /* Other dragged files do not describe an operation. */
           }
@@ -549,10 +554,8 @@ export default function ModEditor({
     try {
       update('files', moveOperation(config.files, source, destination, index));
       setSelected(null);
-      return true;
     } catch (error) {
       setStatus(error.message);
-      return false;
     }
   };
   const addEntry = (isGroup, source = '') => {
@@ -950,7 +953,7 @@ export default function ModEditor({
     setStatus('');
     try {
       const blob = await exportModArchive({ config: canonical, assets });
-      const filename = `${config.id}-${config.version.replace(/[^a-zA-Z0-9._-]/gu, '_').slice(0, 64)}.zip`;
+      const filename = archiveFilename(config.name, config.version);
       setPackageIssues([]);
       setSubmitted(false);
       downloadZip(blob, filename);
@@ -1312,7 +1315,17 @@ export default function ModEditor({
                     </button>
                   </div>
                   <div className="file-workspace">
-                    <section className="operations editor-pane">
+                    <section className="operations editor-pane"
+                      onDragOver={(event) => {
+                        if ([...event.dataTransfer.types].includes('application/g3m-operation')) event.preventDefault();
+                      }}
+                      onDrop={(event) => {
+                        if (![...event.dataTransfer.types].includes('application/g3m-operation')) return;
+                        event.preventDefault();
+                        event.stopPropagation();
+                        try { move(JSON.parse(event.dataTransfer.getData('application/g3m-operation')), []); }
+                        catch { setStatus({ key: 'mce.selectOperation' }); }
+                      }}>
                       <h2 className="pane-title">
                         {t('ui.mod_editor_processing_order')}
                       </h2>
@@ -1552,84 +1565,6 @@ export default function ModEditor({
                                 )}
                               </>
                             )}
-                            <Field
-                              id="move-to-group"
-                              label={t('mce.moveToGroup')}
-                              as="select"
-                              value=""
-                              onChange={(value) => {
-                                if (value) move(selected, JSON.parse(value));
-                              }}
-                            >
-                              <option value="">{t('mce.selectGroup')}</option>
-                              <option value="[]">{t('mce.root')}</option>
-                              {allGroups
-                                .filter(
-                                  (item) =>
-                                    !selected.every(
-                                      (part, index) => item.path[index] === part
-                                    )
-                                )
-                                .map((item) => (
-                                  <option
-                                    key={JSON.stringify(item.path)}
-                                    value={JSON.stringify(item.path)}
-                                  >
-                                    {item.name}
-                                  </option>
-                                ))}
-                            </Field>
-                            <div className="button-row">
-                              <button
-                                aria-label={t('mce.moveUp')}
-                                disabled={selected.at(-1) === 0}
-                                onClick={() => {
-                                  const index = selected.at(-1);
-                                  if (
-                                    move(
-                                      selected,
-                                      selected.slice(0, -1),
-                                      index - 1
-                                    )
-                                  ) {
-                                    setSelected([
-                                      ...selected.slice(0, -1),
-                                      index - 1,
-                                    ]);
-                                  }
-                                }}
-                              >
-                                <Icon name="arrow_up" />
-                              </button>
-                              <button
-                                aria-label={t('mce.moveDown')}
-                                disabled={
-                                  selected.at(-1) >=
-                                  operationList(
-                                    config.files,
-                                    selected.slice(0, -1)
-                                  ).length -
-                                    1
-                                }
-                                onClick={() => {
-                                  const index = selected.at(-1);
-                                  if (
-                                    move(
-                                      selected,
-                                      selected.slice(0, -1),
-                                      index + 1
-                                    )
-                                  ) {
-                                    setSelected([
-                                      ...selected.slice(0, -1),
-                                      index + 1,
-                                    ]);
-                                  }
-                                }}
-                              >
-                                <Icon name="arrow_down" />
-                              </button>
-                            </div>
                           </>
                         )}
                       </div>

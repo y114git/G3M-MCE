@@ -2,6 +2,7 @@ import JSZip from 'jszip';
 import { describe, expect, it } from 'vitest';
 import { createEmptyModConfig } from '../data/modConfig';
 import {
+  archiveFilename,
   emptyAssets,
   exportModArchive,
   hashPackagePath,
@@ -33,6 +34,18 @@ const archive = async (manifest, files = {}, root = '') => {
   return zip.generateAsync({ type: 'uint8array' });
 };
 describe('G3M ZIP import and export', () => {
+  it('names archives after the mod title and version and keeps safe Unicode', () => {
+    expect(archiveFilename('Мой мод', '1.2')).toBe('Мой_мод-1.2.zip');
+    expect(archiveFilename('a'.repeat(130), '1.2')).toBe('a'.repeat(130) + '-1.2.zip');
+    expect(archiveFilename('My Mod', 'v1 / beta:2')).toBe('My_Mod-v1___beta_2.zip');
+    expect(archiveFilename('My  Mod\u00a0Title', '1.2')).toBe('My_Mod_Title-1.2.zip');
+  });
+  it.each(['CON.txt', 'NUL', '../bad:mod?*', 'bad\u0000name', 'trailing. ', '😀'.repeat(200), '한'.repeat(200), ''])('sanitizes portable archive filenames for %s', (name) => {
+    const filename = archiveFilename(name, '../../v1:2');
+    expect(() => safePackagePath(filename)).not.toThrow();
+    expect(new TextEncoder().encode(filename).length).toBeLessThan(200);
+    expect(filename.endsWith('.zip')).toBe(true);
+  });
   it('validates and exports an inferred parent of an empty bundled folder', async () => {
     const assets = { files: {}, directories: ['parent/empty/'] };
     const manifest = { ...config(), files: [{ source: '${mod_path}/parent/', target: '${game_path}/parent/', type: 'extract' }] };

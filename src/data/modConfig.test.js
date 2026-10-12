@@ -20,6 +20,9 @@ const valid = () => ({
   ],
 });
 describe('G3M 2.0.0 contract', () => {
+  it.each(['bad/name', 'bad\\name', 'bad:name', 'bad?name', 'bad*name', 'bad"name', 'bad<name', 'bad>name', 'bad|name', 'CON', 'LPT1.txt', 'name.', 'name '])('rejects nonportable mod name %s', (name) => {
+    expect(validateModConfig({ ...valid(), name }).some((issue) => issue.path === 'name')).toBe(true);
+  });
   it('resolves local and external paths with explicit null placeholders', () => {
     expect(localRelativePath('${mod_path}/readme.txt', null)).toBe(
       'readme.txt'
