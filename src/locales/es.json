@@ -80,7 +80,7 @@
     "custom_game": "Otro juego"
   },
   "home": {
-    "description": "Crea y edita mods en tu navegador. Abre archivos de G3M o Deltamod y guarda un ZIP para G3M 3.4.0."
+    "description": "Crea y edita mods en tu navegador. Abre archivos de G3M o Deltamod y guarda un ZIP para G3M 3.4."
   },
   "editor": {
     "iconHint": "Pega una URL de imagen o selecciona un archivo de icono local.",

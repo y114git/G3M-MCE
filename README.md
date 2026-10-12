@@ -1,6 +1,6 @@
 # G3M Mod Creator/Editor
 
-Create, edit and package G3M mods in your browser. Use the exported ZIP with G3M 3.4.0 or newer.
+Create, edit and package G3M mods in your browser. Use the exported ZIP with G3M 3.4 or newer.
 
 - Edit mod details, authors, icons and tags, including mods for custom games.
 - Add patches, copy files, unpack archives and include documentation. Choose whether to replace existing files, keep them, or clear a destination first.

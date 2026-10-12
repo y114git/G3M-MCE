@@ -80,7 +80,7 @@
     "custom_game": "自定义游戏"
   },
   "home": {
-    "description": "在浏览器中创建和编辑模组。打开 G3M 或 Deltamod 压缩包，保存为 G3M 3.4.0 使用的 ZIP。"
+    "description": "在浏览器中创建和编辑模组。打开 G3M 或 Deltamod 压缩包，保存为 G3M 3.4 使用的 ZIP。"
   },
   "editor": {
     "iconHint": "粘贴图像URL或选择本地图标文件。",

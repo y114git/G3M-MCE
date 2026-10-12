@@ -80,7 +80,7 @@
     "custom_game": "カスタムゲーム"
   },
   "home": {
-    "description": "ブラウザーでMODを作成・編集。G3MやDeltamodのアーカイブを開き、G3M 3.4.0用のZIPを保存できます。"
+    "description": "ブラウザーでMODを作成・編集。G3MやDeltamodのアーカイブを開き、G3M 3.4用のZIPを保存できます。"
   },
   "editor": {
     "iconHint": "画像URLを貼り付けるか、ローカルのアイコンファイルを選択してください。",

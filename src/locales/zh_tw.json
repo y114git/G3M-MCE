@@ -80,7 +80,7 @@
     "custom_game": "自訂遊戲"
   },
   "home": {
-    "description": "在瀏覽器中建立及編輯模組。開啟 G3M 或 Deltamod 壓縮檔，儲存為 G3M 3.4.0 使用的 ZIP。"
+    "description": "在瀏覽器中建立及編輯模組。開啟 G3M 或 Deltamod 壓縮檔，儲存為 G3M 3.4 使用的 ZIP。"
   },
   "editor": {
     "iconHint": "貼上圖像URL或選擇本機圖示檔案。",
